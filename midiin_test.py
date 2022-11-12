@@ -20,7 +20,7 @@ class Application:
 		self.name = Application.name
 		self.midiin = rtmidi.MidiIn(name = self.name)
 
-	def get_rtmidiMidiIn_attr(self) -> rtmidi.MidiIn:
+	def _get_rtmidiMidiIn_attr(self) -> rtmidi.MidiIn:
 		for attr in self.__dict__:					#_!!! too long.
 			appAttr = getattr(self, attr)
 			if isinstance(appAttr, rtmidi.MidiIn):
@@ -42,7 +42,7 @@ class AppTesting(unittest.TestCase):
 
 	def testAppHasAttributeWhichIsAnRtMidiMidiIn(self):
 		app = Application()
-		midiin = app.get_rtmidiMidiIn_attr()
+		midiin = app._get_rtmidiMidiIn_attr()
 		assert isinstance(midiin, rtmidi.MidiIn),\
 			'The "app" object does not have a rtmidi.MidiIn attribute.'
 

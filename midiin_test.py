@@ -1,4 +1,4 @@
-import typing
+from typing import Optional
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -11,14 +11,22 @@ import rtmidi.midiutil as midiutil
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
 
+# # # # # # # # # # # # # # # # # # # # # # # # #
+
 class Application:
 
-	name = 'ArturBjörn'
+	defaultName = 'ArturBjörnApp_defaultName'
 
-	def __init__(self):
+	def __init__(self, name:Optional[str] = None):
 		self.isOpen = True
-		self.name = Application.name
+		self.name = Application.defaultName if name is None else name
 		self.midiin = rtmidi.MidiIn(name = self.name)
+
+	def __enter__(self):
+		return self
+
+	def __exit__(self, exception_type, exception_value, traceback):
+		pass
 
 	def _get_rtmidiMidiIn_attr(self) -> rtmidi.MidiIn:
 		for attr in self.__dict__:					#_!!! too long.
@@ -30,33 +38,29 @@ class Application:
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
 
-
-
 # # # # # # # # # # # # # # # # # # # # # # # # #
 
-class AppTesting(unittest.TestCase):
+class AppTest(unittest.TestCase):
 
-	def testIfAppOpenedAsAnApplication(self):
-		app = Application()
-		assert isinstance(app, Application)
+	@classmethod
+	def setUpClass(self):
+		self.app = Application('Test')
 
-	def testAppHasAttributeWhichIsAnRtMidiMidiIn(self):
-		app = Application()
-		midiin = app._get_rtmidiMidiIn_attr()
+	def test_if_App_opened_as_an_Application(self):
+		assert isinstance(self.app, Application)
+
+	def test_App_has_attribute_which_is_an_rtmidi_MidiIn(self):
+		midiin = self.app._get_rtmidiMidiIn_attr()
 		assert isinstance(midiin, rtmidi.MidiIn),\
 			'The "app" object does not have a rtmidi.MidiIn attribute.'
 
+	def test_App_has_default_name_if_no_name_provided(self):
+		with Application() as app:
+			assert app.name == Application.defaultName,\
+				'The app has not assigned Application.defaultName as its default name.'
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
-
-# class MidiPortTesting (unittest.TestCase):
-
-	# def testIfPortOpened(self):
-	# 	with rtmidi.MidiIn(name = 'Midi In Test Port') as midiin:
-	# 		print(midiin.get_ports())
-
-
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
 

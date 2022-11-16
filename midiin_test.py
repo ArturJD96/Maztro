@@ -82,6 +82,7 @@ class Application:
 
 		self.isOpen = True
 		self.name = Application.default_name if name is None else name
+		self.keyboard = MidiKeys._choose_keyboard()
 
 	def __enter__(self):
 		return self
@@ -144,6 +145,10 @@ class ApplicationTests(unittest.TestCase):
 
 	def test_if_app_opened_as_an_Application(self):
 		assert isinstance(self.app, Application)
+
+	def test_if_app_sees_keyboard_which_is_MidiKeys_object(self):
+		assert type(self.app.keyboard) == MidiKeys,\
+			'The app"s "keyboard" is not of MidiKeys type.'
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
 

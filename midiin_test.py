@@ -1,13 +1,13 @@
 import sys
-import time
+# import time
 # import keyboard # for treating computer's keyboard as a midi keyboard.
-from copy import copy
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 #	T E S T I N G
 
 import unittest
+import typing
 from typing import Optional
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -18,69 +18,20 @@ import rtmidi
 import rtmidi.midiutil as midiutil
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+#	T e s t e d   M o d u l e s
+
+from Application import Application
+from MidiKeys import MidiKeys
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
 
-class MidiKeys:
+class MidiKeys_tests(unittest.TestCase):
 
-	default_keyboard_name: str = 'MPK mini 3'
-
-	def __init__(self, name:Optional[str]=None):
-
-		self.name: str = name or MidiKeys._choose_keyboard()
-		self.midiin: rtmidi.MidiIn; self._port_name: str
-		self.midiin, self._port_name = midiutil.open_midiport(
-			port  = None,
-			type_ = "input",
-			api   = rtmidi.API_UNSPECIFIED,
-			use_virtual = True,
-			interactive = False,
-			client_name = Application.default_name,
-			port_name   = self.name
-		)
-
-	def __enter__(self):
-		return self
-
-	def __exit__(self, exception_type, exception_value, traceback):
-		self.midiin.delete()
-
-	@staticmethod
-	def _choose_keyboard(midi_devices: list[str]=None) -> str:
-		'''
-		Returns name of MidiKeys object representing the default midi keyboard
-		or – if not connected – computer keyboard.
-		'''
-		midi_ports: list[str] = midi_devices or rtmidi.MidiIn().get_ports()
-		default_name = MidiKeys.default_keyboard_name
-		return default_name if default_name in midi_ports else 'comp keyboard'
-
-# # # # # # # # # # # # # # # # # # # # # # # # #
-
-class Application:
-
-	default_name: str = 'ArturBjörnApp_defaultName'
-
-	def __init__(self, name:Optional[str]=None):
-
-		self.isOpen = True
-		self.name = Application.default_name if name is None else name
-		self.keyboard = MidiKeys()
-
-	def __enter__(self):
-		return self
-
-	def __exit__(self, exception_type, exception_value, traceback):
-		self.keyboard.midiin.delete()
-
-# # # # # # # # # # # # # # # # # # # # # # # # #
-# # # # # # # # # # # # # # # # # # # # # # # # #
-# # # # # # # # # # # # # # # # # # # # # # # # #
-
-class MidiKeysTests(unittest.TestCase):
+	nameOfTheTestedMidiKeys = 'Test Midi_Keys'
 
 	def setUp(self):
-		self.midikeys = MidiKeys('TestMidiKeys').__enter__()
+		self.midikeys = MidiKeys(MidiKeys_tests.nameOfTheTestedMidiKeys).__enter__()
 		self.midiout = rtmidi.MidiOut()
 
 	def tearDown(self):
@@ -140,15 +91,20 @@ class MidiKeysTests(unittest.TestCase):
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
 
-class ApplicationTests(unittest.TestCase):
+class Application_tests(unittest.TestCase):
 
 	nameOfTheTestedApp = 'Test HCI_APP'
 
 	def setUp(self):
-		self.app = Application(ApplicationTests.nameOfTheTestedApp).__enter__()
+		self.app = Application(Application_tests.nameOfTheTestedApp).__enter__()
 
 	def tearDown(self):
 		self.app.__exit__(*sys.exc_info()) # dummy args advised here: https://stackoverflow.com/questions/26635684/calling-enter-and-exit-manually
+
+	def test_application_launches_with_its_default_name(self):
+		with Application() as app:
+			assert app.name == Application.default_name,\
+				'When name argument is not given during instantiation, Application is not named according to its default name.'
 
 	def test_if_app_opened_as_an_Application(self):
 		assert isinstance(self.app, Application)

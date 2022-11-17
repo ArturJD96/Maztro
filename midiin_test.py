@@ -1,5 +1,6 @@
+import sys
 import time
-import keyboard
+# import keyboard # for treating computer's keyboard as a midi keyboard.
 from copy import copy
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -14,11 +15,7 @@ from typing import Optional
 #	M I D I
 
 import rtmidi
-import rtmidi.midiutil as midiutil 
-
-# # # # # # # # # # # # # # # # # # # # # # # # #
-
-# # # # # # # # # # # # # # # # # # # # # # # # #
+import rtmidi.midiutil as midiutil
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -26,14 +23,12 @@ import rtmidi.midiutil as midiutil
 
 class MidiKeys:
 
-	default_keyboard_name: str = 'Akai Mini MPK 3'
+	default_keyboard_name: str = 'MPK mini 3'
 
 	def __init__(self, name:Optional[str]=None):
 
-		self.name: str = name or MidiKeys.default_keyboard_name
-
-		self.midiin: rtmidi.MidiIn
-		self._port_name: str
+		self.name: str = name or MidiKeys._choose_keyboard()
+		self.midiin: rtmidi.MidiIn; self._port_name: str
 		self.midiin, self._port_name = midiutil.open_midiport(
 			port  = None,
 			type_ = "input",
@@ -44,7 +39,17 @@ class MidiKeys:
 			port_name   = self.name
 		)
 
+	def __enter__(self):
+		return self
+
+	def __exit__(self, exception_type, exception_value, traceback):
+		self.midiin.delete()
+
 	def _get_rtmidiMidiIn_attr(self) -> rtmidi.MidiIn:
+		'''
+		Returns first MidiKeys instance attribute
+		which is of rtmidi.MidiIn type.
+		'''
 		for attr in self.__dict__:					#_! too long.
 			appAttr = getattr(self, attr)
 			if isinstance(appAttr, rtmidi.MidiIn):
@@ -53,24 +58,14 @@ class MidiKeys:
 				continue
 
 	@staticmethod
-	def _choose_keyboard(midi_devices: list[str]=None) -> 'MidiKeys':	#_! string, because bare MidiKeys is not recognized as type...
-		
+	def _choose_keyboard(midi_devices: list[str]=None) -> str:
+		'''
+		Returns name of MidiKeys object representing the default midi keyboard
+		or – if not connected – computer keyboard.
+		'''
 		midi_ports: list[str] = midi_devices or rtmidi.MidiIn().get_ports()
-
-		if MidiKeys.default_keyboard_name in midi_ports:
-
-			return MidiKeys(MidiKeys.default_keyboard_name)
-
-		else:
-
-			#_! Create MidiKeys instance which represents computer keyboard...
-			return MidiKeys('comp keyboard')
-
-	def __enter__(self):
-		pass
-
-	def __exit__(self, exception_type, exception_value, traceback):
-		pass
+		default_name = MidiKeys.default_keyboard_name
+		return default_name if default_name in midi_ports else 'comp keyboard'
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -82,13 +77,13 @@ class Application:
 
 		self.isOpen = True
 		self.name = Application.default_name if name is None else name
-		self.keyboard = MidiKeys._choose_keyboard()
+		self.keyboard = MidiKeys()
 
 	def __enter__(self):
 		return self
 
 	def __exit__(self, exception_type, exception_value, traceback):
-		pass
+		self.keyboard.midiin.delete()
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
 # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -96,22 +91,25 @@ class Application:
 
 class MidiKeysTests(unittest.TestCase):
 
-	@classmethod
-	def setUpClass(self):
-		self.midikeys = MidiKeys('TestMidiKeys')
+	def setUp(self):
+		self.midikeys = MidiKeys('TestMidiKeys').__enter__()
+		self.midiout = rtmidi.MidiOut()
+
+	def tearDown(self):
+		self.midikeys.__exit__(*sys.exc_info()) # dummy args advised here: https://stackoverflow.com/questions/26635684/calling-enter-and-exit-manually
 
 	def test_has_attribute_which_is_an_rtmidi_MidiIn(self):
 		midiin = self.midikeys._get_rtmidiMidiIn_attr()
 		assert isinstance(midiin, rtmidi.MidiIn),\
 			'The "MidiKeys" object does not have a rtmidi.MidiIn attribute.'
 
-	def test_if_midiKeys_opens_its_port(self):
+	def test_if_midikeys_opens_its_port(self):
 		assert self.midikeys.midiin.is_port_open(), 'The "app" didn\'t open its midiin port.'
 
 	def test_app_receives_default_name_if_no_name_provided(self):
-		midikeys = MidiKeys()
-		assert midikeys.name == midikeys.default_keyboard_name,\
-			'The app has not Application.defaultName as its default name.'
+		with MidiKeys() as mk:
+			assert mk.name in [mk.default_keyboard_name, 'comp keyboard'],\
+				'The app has not Application.defaultName as its default name.'
 
 	def test_if_port_name_is_the_same_as_apps(self):
 		port_name_provided = self.midikeys.name
@@ -119,19 +117,33 @@ class MidiKeysTests(unittest.TestCase):
 		assert port_name_provided == port_name_returned, 'Port name does not match the name app provided.'
 
 	def test_choose_keyboard_static_method_returns_MidiKeys_if_called_without_arguments(self):
-		assert MidiKeys()._choose_keyboard()
+		with MidiKeys() as mk:
+			assert mk._choose_keyboard()
 
 	def test_if_default_keyboard_is_plugged_choose_it_as_apps_keys(self):
 		available_midi_ports = [ 'port1', 'port2', MidiKeys.default_keyboard_name ]
 		chosen_keyboard = MidiKeys._choose_keyboard(available_midi_ports)
-		assert chosen_keyboard.name == MidiKeys.default_keyboard_name,\
+		assert chosen_keyboard == MidiKeys.default_keyboard_name,\
 			'During MidiKeys instantiation, default midi keyboard is not chosen as keyboard source despite being plugged.'
 
 	def test_if_default_keyboard_is_NOT_plugged_choose_comp_keys_as_apps_keys(self):
 		available_midi_ports = [ 'port1', 'port2' ]
 		chosen_keyboard = MidiKeys._choose_keyboard(available_midi_ports)
-		assert chosen_keyboard.name == 'comp keyboard',\
+		assert chosen_keyboard == 'comp keyboard',\
 			'During MidiKeys instantiation, computer keyboard is not chosen as keyboard despite being the only valid midi source.'
+
+	def test_only_one_default_midikeys_midiin_port_is_opened(self):
+		port = MidiKeys.default_keyboard_name
+		midiin_ports = self.midiout.get_ports()
+		count = midiin_ports.count(port)
+		assert count <= 1,\
+			f'There are {count} default keyboard ports open, should be 1 or less.'
+
+	def test_is_midikeys_port_visible_for_rtmidi_midiout_object(self):
+		ports = self.midiout.get_ports()
+		assert self.midikeys.name in ports,\
+			'MidiKeys midiin did not create a midi port visible for other rtmidi MidiOut object.'
+		
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -139,9 +151,11 @@ class ApplicationTests(unittest.TestCase):
 
 	nameOfTheTestedApp = 'Test HCI_APP'
 
-	@classmethod
-	def setUpClass(self):
-		self.app = Application(ApplicationTests.nameOfTheTestedApp)
+	def setUp(self):
+		self.app = Application(ApplicationTests.nameOfTheTestedApp).__enter__()
+
+	def tearDown(self):
+		self.app.__exit__(*sys.exc_info()) # dummy args advised here: https://stackoverflow.com/questions/26635684/calling-enter-and-exit-manually
 
 	def test_if_app_opened_as_an_Application(self):
 		assert isinstance(self.app, Application)
@@ -151,7 +165,6 @@ class ApplicationTests(unittest.TestCase):
 			'The app"s "keyboard" is not of MidiKeys type.'
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
-
 # # # # # # # # # # # # # # # # # # # # # # # # #
 
 if __name__ == '__main__':						# allows for opening as a script

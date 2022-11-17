@@ -45,18 +45,6 @@ class MidiKeys:
 	def __exit__(self, exception_type, exception_value, traceback):
 		self.midiin.delete()
 
-	def _get_rtmidiMidiIn_attr(self) -> rtmidi.MidiIn:
-		'''
-		Returns first MidiKeys instance attribute
-		which is of rtmidi.MidiIn type.
-		'''
-		for attr in self.__dict__:					#_! too long.
-			appAttr = getattr(self, attr)
-			if isinstance(appAttr, rtmidi.MidiIn):
-				return appAttr
-			else:
-				continue
-
 	@staticmethod
 	def _choose_keyboard(midi_devices: list[str]=None) -> str:
 		'''
@@ -99,8 +87,13 @@ class MidiKeysTests(unittest.TestCase):
 		self.midikeys.__exit__(*sys.exc_info()) # dummy args advised here: https://stackoverflow.com/questions/26635684/calling-enter-and-exit-manually
 
 	def test_has_attribute_which_is_an_rtmidi_MidiIn(self):
-		midiin = self.midikeys._get_rtmidiMidiIn_attr()
-		assert isinstance(midiin, rtmidi.MidiIn),\
+		midiin_attr = None 
+		for attr in self.midikeys.__dict__:			#_! too long...
+			appAttr = getattr(self.midikeys, attr)
+			if isinstance(appAttr, rtmidi.MidiIn):
+				midiin_attr = appAttr
+				break
+		assert isinstance(midiin_attr, rtmidi.MidiIn),\
 			'The "MidiKeys" object does not have a rtmidi.MidiIn attribute.'
 
 	def test_if_midikeys_opens_its_port(self):

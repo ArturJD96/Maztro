@@ -110,12 +110,15 @@ class Application_tests(unittest.TestCase):
 
 	def test_send_midi_message_and_receive_it_in_app(self):
 
-		message_has_been_received = False
+		class Dummy:
+			def __init__(self):
+				self.flag = False
+			def change_flag (self, event, data):
+				self.flag = True
 
-		def testCallback ():
-			message_has_been_received = True
+		testObject = Dummy()
 
-		self.app.set_callback(testCallback)
+		self.app.midiin.set_callback(testObject.change_flag)
 
 		with rtmidi.MidiOut() as midi_out:
 
@@ -125,11 +128,11 @@ class Application_tests(unittest.TestCase):
 
 			midi_out.open_port(port_id)
 			midi_out.send_message([0x90, 48, 100]) # Note on [channel, note, vel]
-			time.sleep(0.1)
+			time.sleep(0.5)
 			midi_out.send_message([0x80, 48, 100]) # Note off
 			time.sleep(0.1)
 
-		assert message_has_been_received,\
+		assert testObject.flag,\
 			'The midi message does not reach port of the MidiIn'
 
 # # # # # # # # # # # # # # # # # # # # # # # # #

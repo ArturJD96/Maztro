@@ -1,3 +1,5 @@
+import sys
+
 import typing
 from typing import Optional
 
@@ -5,7 +7,7 @@ from typing import Optional
 #
 #	M O D U L E S
 
-from MidiKeys import MidiKeys
+from MidiIn import MidiIn
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -25,11 +27,26 @@ class Application:
 
 	default_name: str = 'ArturBjörnApp_defaultName'
 
-	def __init__(self, name:[str]=default_name):
-		self.name = name
-		self.keyboard = MidiKeys()
+	def __init__(self, name:str=None):
+		
+		self.name = name or Application.default_name
+		self.midiin = MidiIn()
+
+		# on initialization:
+		# — open keyboard's port (on attribute instantiation)
+		# – attach callback. Callback is a method of Application ?
+		# ... continue with instantiation ...
+		# – run the main loop ???
+		#	* create debug attribute. If true, run loop but stop it soon (?). If false, run it.
+
+		# -> Recording
+
+		# -> move to self.keyborad self.recordingOn
+		# self.keyboard.recording
+		# while keyboard.recordingOn:
 
 	def __enter__(self):
+		self.midiin.__enter__()
 		return self
 
 	def __exit__(self, exception_type, exception_value, traceback):
@@ -37,4 +54,4 @@ class Application:
 		Every midi ports opened using class' attributes
 		need to close when instance is teared down.
 		'''
-		self.keyboard.midiin.delete()	# according to rtmidi docs: https://spotlightkid.github.io/python-rtmidi/rtmidi.html#rtmidi.MidiIn.delete
+		self.midiin.__exit__(*sys.exc_info())	# according to rtmidi docs: https://spotlightkid.github.io/python-rtmidi/rtmidi.html#rtmidi.MidiIn.delete

@@ -1,4 +1,0 @@
-Bash commands:
-* type 'cdhci' to get to the hci app directory.
-
-

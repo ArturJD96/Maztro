@@ -148,7 +148,6 @@ class Application_tests(unittest.TestCase):
 		self.app.midiin.set_callback(testObject.change_flag)
 
 		with rtmidi.MidiOut() as midiout:
-
 			midiout.open_port(self.app.midiin.get_port_id())
 			midiout.send_message([0x90, 48, 100]) # Note on [channel, note, vel]
 			time.sleep(0.1)
@@ -184,8 +183,13 @@ class Application_tests(unittest.TestCase):
 		assert isinstance(self.app.callback, MidiMessageHandler),\
 			'App callback attribute is not a MidiMessageHandler.'
 
-	def test_midi_cc_message_turns_on_recording(self):
-		pass
+
+	# def test_midi_note_message_turns_on_recording(self):
+		
+	# 	note_record_on = [0x90, ]
+
+	# 	with rtmidi.MidiOut() as midiout:
+	# 		midiout.open_port(self.app.midiin.get_port_id())
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # #

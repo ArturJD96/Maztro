@@ -8,6 +8,8 @@ from typing import Optional
 import rtmidi
 import rtmidi.midiutil as midiutil
 
+
+
 # # # # # # # # # # # # # # # # # # # # # # # # #
 
 class MidiIn:
@@ -41,13 +43,13 @@ class MidiIn:
 	'''
 
 	default_device_name:str = 'MPK mini 3'
-	software_port_name:str = 'comp keyboard'
-	default_client_name:str = 'Default Client Name APP_HCI'
+	software_port_name:str = 'comp keyboard' # dummy
+	default_client_name:str = 'Default Client Name APP_HCI' # dummy
 
 
 	@staticmethod
 	def is_default_device_connected(ports:list[str]=None) -> bool:
-		return MidiIn.default_device_name in (ports or rtmidi.MidiIn().get_ports())
+		return MidiIn.default_device_name in (ports or rtmidi.MidiOut().get_ports())
 
 
 	@staticmethod		
@@ -78,7 +80,9 @@ class MidiIn:
 
 	def get_port_id(self, ports:list[str]=None):
 		ports = ports or rtmidi.MidiOut().get_ports()
-		return ports.index(self.port_name)
+		index = ports.index(self.port_name)
+		print(index)
+		return index
 
 
 	def __getattr__(self, func):

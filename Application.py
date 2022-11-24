@@ -26,7 +26,7 @@ class Application:
 
 	'''
 
-	default_name: str = 'ArturBjörnApp_defaultName'
+	default_name:str = 'ArturBjörnApp_defaultName'
 
 	def __init__(self, name:str=None):
 		

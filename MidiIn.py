@@ -44,14 +44,17 @@ class MidiIn:
 	software_port_name:str = 'comp keyboard'
 	default_client_name:str = 'Default Client Name APP_HCI'
 
+
 	@staticmethod
 	def is_default_device_connected(ports:list[str]=None) -> bool:
 		return MidiIn.default_device_name in (ports or rtmidi.MidiIn().get_ports())
 
+
 	@staticmethod		
 	def get_default_device(ports:list[str]=None) -> str:
 		'''Returns name of the default hardware device or – if not connected – software device'''
-		return MidiIn.default_device_name if MidiIn.is_default_device_connected(ports) else  MidiIn.software_port_name
+		return MidiIn.default_device_name if MidiIn.is_default_device_connected(ports) else MidiIn.software_port_name
+
 
 	''' i n s t a n c e   m e t h o d s'''
 
@@ -59,7 +62,7 @@ class MidiIn:
 
 		self.port_name:str = name or MidiIn.get_default_device()
 
-		# DELEGATE [https://erikscode.space/index.php/2020/08/01/delegate-and-decorate-in-python-part-1-the-delegation-pattern/]
+		# delegate [https://erikscode.space/index.php/2020/08/01/delegate-and-decorate-in-python-part-1-the-delegation-pattern/]
 		self._midiin:rtmidi.MidiIn; self._port_name:str
 		self._midiin, self._port_name = midiutil.open_midiport(
 			port  = None,
@@ -72,6 +75,12 @@ class MidiIn:
 		)
 		self._midiin_methods:list[str] = [m for m in dir(rtmidi.MidiIn) if not m.startswith('_')]
 
+
+	def get_port_id(self, ports:list[str]=None):
+		ports = ports or rtmidi.MidiOut().get_ports()
+		return ports.index(self.port_name)
+
+
 	def __getattr__(self, func):
 		'''delegates rtmidi.MidiIn methods'''
 		def method(*args):
@@ -82,9 +91,11 @@ class MidiIn:
 
 		return method
 
+
 	def __enter__(self):
 		self._midiin.__enter__() # opens the port as well.
 		return self
+
 
 	def __exit__(self, exception_type, exception_value, traceback):
 		self._midiin.__exit__(exception_type, exception_value, traceback)

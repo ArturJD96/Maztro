@@ -8,6 +8,7 @@ from typing import Optional
 #	M O D U L E S
 
 from MidiIn import MidiIn
+from MidiMessageHandler import MidiMessageHandler
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -30,7 +31,10 @@ class Application:
 	def __init__(self, name:str=None):
 		
 		self.name = name or Application.default_name
-		self.midiin = MidiIn()
+		self.midiin = MidiIn()	# open midi in port
+		self.callback = MidiMessageHandler(self.midiin.port_name)
+
+		self.midiin.set_callback(self.callback) #_! this is not covered in tests!
 
 		# on initialization:
 		# — open keyboard's port (on attribute instantiation)

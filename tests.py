@@ -35,11 +35,9 @@ class MidiIn_tests(unittest.TestCase):
 
 	port_name = 'Testing_HCI_Midi_In'
 
-
 	def setUp(self):
-		self.midiin = MidiIn(MidiIn_tests.port_name)
+		self.midiin = MidiIn(MidiIn_tests.port_name).__enter__()
 		self.midiin_ports = rtmidi.MidiOut().get_ports()
-
 
 	def tearDown(self):
 		self.midiin.__exit__(*sys.exc_info()) # dummy args advised here: https://stackoverflow.com/questions/26635684/calling-enter-and-exit-manually
@@ -49,11 +47,6 @@ class MidiIn_tests(unittest.TestCase):
 		with MidiIn() as mk:
 			assert mk.port_name in [MidiIn.default_device_name, MidiIn.software_port_name],\
 				'The app does not have correct default name.'
-
-
-	def test_port_name_provided_is_the_same_as_port_of_rtmidi_midiin(self):
-		assert self.midiin.port_name == self.midiin._port_name,\
-			'The rtmidi.MidiIn delegate uses different port name than provided when instantiating MidiIn object.'
 
 
 	def test_check_if_default_device_is_connected(self):
@@ -89,6 +82,9 @@ class MidiIn_tests(unittest.TestCase):
 
 
 	def test_is_midiin_port_visible_for_rtmidi_midiout_object(self):
+		# print(rtmidi.MidiOut().get_ports())
+		# print(self.midiin.port_name)
+		# print(self.midiin.is_port_open())
 		assert self.midiin.port_name in self.midiin_ports,\
 			'MidiIn did not create a midi port visible for other rtmidi MidiOut object.'
 
@@ -111,7 +107,6 @@ class MidiIn_tests(unittest.TestCase):
 class Application_tests(unittest.TestCase):
 
 	nameOfTheTestedApp = 'Test HCI_APP'
-
 
 	def setUp(self):
 		self.app = Application(Application_tests.nameOfTheTestedApp).__enter__()
@@ -137,24 +132,35 @@ class Application_tests(unittest.TestCase):
 
 	def test_send_midi_message_and_receive_it_in_app(self):
 
-		class Dummy:
+		class Callback:
+			initialized = False
+			called = False
+			flag = False
 			def __init__(self):
-				self.flag = False
-			def change_flag (self, event, data):
-				self.flag = True
+				Callback.initialized = True
+				Callback.flag = False
+			def __call__(self, event, data):
+				print('work!')
+				Callback.called = True
+				Callback.flag = True
 
-		testObject = Dummy()
+		# print(self.app.midiin.get_ports())
+		# print(self.app.midiin.get_port_id())
+		# print(self.app.midiin.is_port_open())
 
-		self.app.midiin.set_callback(testObject.change_flag)
+		self.app.midiin.set_callback(Callback())
 
 		with rtmidi.MidiOut() as midiout:
-			midiout.open_port(self.app.midiin.get_port_id())
+			print(midiout.get_ports())
+			print(self.app.midiin.get_port_id())
+			# unable to simulate keyboard keystroke.
+			midiout.open_port(self.app.midiin.get_port_id())	# works only if midiin port is virtual...
 			midiout.send_message([0x90, 48, 100]) # Note on [channel, note, vel]
-			time.sleep(0.1)
+			time.sleep(0.5)
 			midiout.send_message([0x80, 48, 100]) # Note off
-			time.sleep(0.1)
+			time.sleep(0.5)
 
-		assert testObject.flag,\
+		assert Callback.flag,\
 			'The midi message does not reach port of the MidiIn'
 
 
@@ -185,9 +191,7 @@ class Application_tests(unittest.TestCase):
 
 
 	# def test_midi_note_message_turns_on_recording(self):
-		
 	# 	note_record_on = [0x90, ]
-
 	# 	with rtmidi.MidiOut() as midiout:
 	# 		midiout.open_port(self.app.midiin.get_port_id())
 

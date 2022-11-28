@@ -116,11 +116,11 @@ class MainApp:
 	def __call__ (self):
 		self._called = True
 		self.midiin.open_virtual_port(self.keyboard_name)
-		self.midiin.set_callback(self.handleMidi, self)
+		self.midiin.set_callback(self.handle_incoming_midi, self)
 		try:
 			port_id:int = self.midiin.get_ports().index(self.keyboard_name)
 			with self.midiin.open_port(port_id):
-				self.enterListenerLoop() #
+				self.enter_listener_loop() #
 
 		except ValueError as ve:
 			keyboard_name = MainApp.default_keyboard_name
@@ -131,10 +131,10 @@ class MainApp:
 		else:
 			# listen to the keyboard strokes !
 			with self.midiin.open_virtual_port(self.keyboard_name):
-				self.enterListenerLoop() #
+				self.enter_listener_loop() #
 
 
-	def handleMidi (self, event:tuple, data=None) -> None:	# ...
+	def handle_incoming_midi (self, event:tuple, data=None) -> None:	# ...
 		msb_note_on  = 0x99
 		msb_note_off = 0x89
 		key_recording = 4
@@ -153,7 +153,7 @@ class MainApp:
 			self.recording.midi.append([pitch, vel, deltaTime])
 
 
-	def enterListenerLoop (self):	# ...
+	def enter_listener_loop (self):	# ...
 		while False:
 			pass
 
@@ -207,8 +207,6 @@ class MainApp_tests(unittest.TestCase):
 		with self.assertWarnsRegex(Hardware_Warning, expected_error_message):
 			shutup.unmute_warnings()
 			app()
-
-
 
 
 if __name__ == '__main__':

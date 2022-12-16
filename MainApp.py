@@ -1,6 +1,7 @@
 import typing
 import warnings
 import sys
+import time
 import rtmidi
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#
@@ -15,17 +16,12 @@ class MainApp:
 
 	default_keyboard_name = 'MPK mini 3'
 
-	def __enter__ (self):
-		return self
-
-	def __exit__ (self, exception_type, exception_value, traceback):
-		self.midiin.__exit__(*sys.exc_info())
-
 	def __init__ (self, keyboard_name:str=None):
 		self.keyboard_name = keyboard_name if keyboard_name is not None else MainApp.default_keyboard_name
 		self.midiin = rtmidi.MidiIn()
 		self.is_recording = False			#
-		self.progression:Progression = None		#
+		self.progression:Progression = None	#
+		self.time:float = None		#
 		self._called = False
 
 	def __call__ (self):
@@ -44,7 +40,13 @@ class MainApp:
 					Hardware_Warning)
 			# listen to the keyboard strokes !
 			self.midiin.open_virtual_port(self.keyboard_name)
-			#self.enter_listener_loop() #
+			# self.enter_listener_loop() #
+
+	def __enter__ (self):
+		return self
+
+	def __exit__ (self, exception_type, exception_value, traceback):
+		self.midiin.__exit__(*sys.exc_info())
 
 	@property
 	def ports (self) -> list[str]:
@@ -62,13 +64,16 @@ class MainApp:
 			if self.is_recording:
 				print('RECORDING ON')
 				self.progression = Progression()
+				self.time = 0
 			else:
 				print('RECORDING OFF\n', self.progression)
 		if self.is_recording and (msb == 0x90 or msb == 0x80):
-			print(pitch, vel, delta_time)
-			self.progression += Note(pitch, vel, delta_time)
+			self.time += delta_time
+			self.progression += Note(pitch, vel, self.time, delta_time)
+			print(pitch, vel, self.time, delta_time)	# my fail: passed by value or reference?
 
 
 	def enter_listener_loop (self):	# ...
+		self.time = 0
 		while True:
 			pass

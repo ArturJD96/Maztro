@@ -26,7 +26,7 @@ class Progression_tests(unittest.TestCase):
 
 	def setUp(self):
 		self.prog = Progression()
-		progression = [
+		progression = [	# this must be rewritten.
 			(48, 38, 1.7640808810000002),
 			(48, 0, 0.166371539),
 			(60, 59, 0.970119562),

@@ -10,7 +10,7 @@ class Progression:
 
 	def __init__ (self):
 		self.notes = [] # array of tuples
-		self.mode = 'midi2humMidi'
+		self.mode = 'midi2kern'
 		self.chord_mode = False
 
 	def __str__ (self) -> str:
@@ -18,7 +18,7 @@ class Progression:
 			case 'midi2humMidi':
 				return self.midi2humMidi()
 			case 'midi2kern':
-				return self.midi2semits()
+				return self.midi2kern()
 
 	def __iadd__ (self, note:Note) -> 'Progression':
 		self.notes.append(note)

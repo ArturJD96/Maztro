@@ -2,7 +2,9 @@ import typing
 import warnings
 import sys
 import time
+import asyncio
 import rtmidi
+from Correlations import Correlations_in_kern_repository
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
@@ -67,11 +69,11 @@ class MainApp:
 				self.time = 0
 			else:
 				print('RECORDING OFF\n', self.progression)
+				correlations = Correlations_in_kern_repository(str(self.progression))
 		if self.is_recording and (msb == 0x90 or msb == 0x80):
 			self.time += delta_time
 			self.progression += Note(pitch, vel, self.time, delta_time)
 			print(pitch, vel, self.time, delta_time)	# my fail: passed by value or reference?
-
 
 	def enter_listener_loop (self):	# ...
 		self.time = 0

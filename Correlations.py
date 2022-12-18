@@ -6,7 +6,7 @@ import subprocess
 
 class Correlations_in_kern_repository:
 
-	CORRELATION_MINIMUM = 0.4
+	CORRELATION_MINIMUM = 0.7
 
 	def __init__ (self, kern_input:str=None, kern_repository_directory:str=None):
 
@@ -31,6 +31,7 @@ class Correlations_in_kern_repository:
 		# self.dict = { piece : self.get_correlated_bars(f'{kern_repo_dir}/{piece}') for piece in os.listdir(kern_repo_dir) }
 
 	def report_correlation_for_piece (self, piece, results):
+			print('testikel')
 			print(piece, results)
 
 	def get_correlated_bars (self, kern_piece_dir: str):
@@ -112,7 +113,9 @@ class Correlations_in_kern_repository:
 		input_file_name:str = None
 		wsl:bool = None
 
-		if platform.platform() == 'Windows-10-10.0.18363-SP0':
+		print(platform.platform())
+
+		if platform.platform() == 'Windows-10-10.0.18363-SP0' or platform.platform() == 'Linux-4.4.0-18362-Microsoft-x86_64-with-Ubuntu-18.04-bionic':
 			humdrum_directory = '/home/bjorn/humdrum-tools'
 			input_file_name = "/mnt/b/Users/Bjorn/Documents/testikel/input.txt"
 			wsl = True
@@ -132,5 +135,4 @@ class Correlations_in_kern_repository:
 		else:
 			return humdrum_directory, input_file_name, wsl
 
-# c = Correlations_in_kern_repository()
-# print(c.dict)
+c = Correlations_in_kern_repository()

@@ -89,7 +89,7 @@
                             font: "Leipzig"
                         }
                         var svg = tk.renderData(krn, options);
-                        console.log(svg.substring(0, 100));
+                        console.log(svg);
                         
                         // This line renders the first page of the file
                         document.getElementById("notation").innerHTML = svg;// tk.renderToSVG(1);
@@ -98,25 +98,25 @@
                         document.getElementById("notation2").innerHTML = tk.renderToSVG(1);
                     });
 
-                /*
-                // This line fetches the MEI file we want to render...
-                fetch("https://www.verovio.org/examples/downloads/Schubert_Lindenbaum.mei")
-                    // ... then receives the response and "unpacks" the MEI from it
-                    .then((response) => response.text())
-                    .then((meiXML) => {
-                        // ... then we can load the data into Verovio ...
-                        tk.loadData(meiXML);
+                
+                // // This line fetches the MEI file we want to render...
+                // fetch("https://www.verovio.org/examples/downloads/Schubert_Lindenbaum.mei")
+                //     // ... then receives the response and "unpacks" the MEI from it
+                //     .then((response) => response.text())
+                //     .then((meiXML) => {
+                //         // ... then we can load the data into Verovio ...
+                //         tk.loadData(meiXML);
                         
-                        //let humdrum = tk.convertMEIToHumdrum(meiXML);
-                        //console.log(humdrum);
+                //         //let humdrum = tk.convertMEIToHumdrum(meiXML);
+                //         //console.log(humdrum);
 
-                        // ... and generate the SVG for the first page ...
-                        let svg = tk.renderToSVG(1);
-                        // ... and finally gets the <div> element with the ID we specified,
-                        // and sets the content (innerHTML) to the SVG that we just generated.
-                        document.getElementById("blabla").innerHTML = svg;
-                    });
-                    */
+                //         // ... and generate the SVG for the first page ...
+                //         let svg = tk.renderToSVG(1);
+                //         // ... and finally gets the <div> element with the ID we specified,
+                //         // and sets the content (innerHTML) to the SVG that we just generated.
+                //         document.getElementById("notation").innerHTML = svg;
+                //     });
+                    
             }
         });
     </script>

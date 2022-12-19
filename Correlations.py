@@ -20,15 +20,15 @@ class Correlations_in_kern_repository:
 		self.humdrum_directory, self.input_file_name, self.wsl = self.selectPlatform()
 		kern_repo_dir = kern_repository_directory or f"{self.humdrum_directory}/data/mozart/piano-sonatas/kern"
 
-		self.dict = {}
-
+		self.dict = {}	# dict with all the sonatas and their correlations in left-most spine.
 		for piece in os.listdir(kern_repo_dir):
 			correlated_bars = self.get_correlated_bars(f'{kern_repo_dir}/{piece}')
 			if correlated_bars:
 				self.dict[piece] = correlated_bars
-				self.report_correlation_for_piece(piece, correlated_bars)
+				# self.report_correlation_for_piece(piece, correlated_bars)
 
-		# self.dict = { piece : self.get_correlated_bars(f'{kern_repo_dir}/{piece}') for piece in os.listdir(kern_repo_dir) }
+		# for each myank bar description, perform myank on, in
+		
 
 	def report_correlation_for_piece (self, piece, results):
 			print('testikel')

@@ -16,27 +16,49 @@
         */
     </script>
     <script>
-        // following line processes the JSON Flask variable {{data}}
-
-
-
-
-    </script>
-    <script>
+        {% for measure_range in filter %}
         displayHumdrum({
             uri: "github://craigsapp/mozart-piano-sonatas/kern/{{sonata}}",
             //uri: "github://craigsapp/hummel-preludes/kern/prelude67-15.krn",
-            source: '{{ sonata|replace('.', '') }}',
+            source: '{{ sonata|replace('.', '') }}{{measure_range}}',
             //source: 'sonata03-1',
             spacingStaff: 14,
             spacingSystem: 0,
             scale: 33,
-            
-            filter: "myank -m {{ filter|join(',') }}",
-        });
-    </script>
 
-    <script type="text/x-humdrum" id="{{ sonata|replace('.', '') }}"></script>
+            filter: "myank -m {{ measure_range|join(',') }}",
+        });
+        {% endfor %}
+
+
+        {% for sonata, filter in results.items(): %}
+        {% for measure_range in filter|safe: %}
+        console.log('{{key}}');
+        console.log("{{filter|safe}}");
+        console.log("{{measure_range}}")
+
+        displayHumdrum({
+            uri: "github://craigsapp/mozart-piano-sonatas/kern/{{sonata}}",
+            //uri: "github://craigsapp/hummel-preludes/kern/prelude67-15.krn",
+            source: '{{ sonata|replace('.', '') }}{{measure_range}}',
+            //source: 'sonata03-1',
+            spacingStaff: 14,
+            spacingSystem: 0,
+            scale: 33,
+
+            filter: "myank -m {{ measure_range|join(',') }}",
+        });
+        {% endfor %}
+        {% endfor %}
+
+    </script>
+    {% for sonata, filter in results.items(): %}
+    <a href="#">{{sonata}}</a>
+    <p>{{filter}}</p>
+    {% for measure_range in filter|safe: %}
+    <script type="text/x-humdrum" id="{{ sonata|replace('.', '') }}{{measure_range}}"></script>
+    {% endfor %}
+    {% endfor %}
 
 </body>
 </html>

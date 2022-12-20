@@ -6,7 +6,8 @@ import subprocess
 
 class Correlations_in_kern_repository:
 
-	CORRELATION_MINIMUM = 0.7
+	CORRELATION_MINIMUM = 0.9
+	results = {}
 
 	def __init__ (self, kern_input:str=None, kern_repository_directory:str=None):
 
@@ -20,12 +21,11 @@ class Correlations_in_kern_repository:
 		self.humdrum_directory, self.input_file_name, self.wsl = self.selectPlatform()
 		kern_repo_dir = kern_repository_directory or f"{self.humdrum_directory}/data/mozart/piano-sonatas/kern"
 
-		self.dict = {}	# dict with all the sonatas and their correlations in left-most spine.
+		self.results = {}	# dict with all the sonatas and their correlations in left-most spine.
 		for i, piece in enumerate(os.listdir(kern_repo_dir)):
 			correlated_bars = self.get_correlated_bars(f'{kern_repo_dir}/{piece}')
 			if correlated_bars:
-				self.dict[piece] = correlated_bars
-				self.report_correlation_for_piece(piece, correlated_bars)
+				self.results[piece] = correlated_bars
 				
 	def report_correlation_for_piece (self, piece, results):
 		print('testikel')
@@ -147,4 +147,4 @@ class Correlations_in_kern_repository:
 		else:
 			return humdrum_directory, input_file_name, wsl
 
-c = Correlations_in_kern_repository()
+#c = Correlations_in_kern_repository()

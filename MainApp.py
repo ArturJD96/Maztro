@@ -70,10 +70,11 @@ class MainApp:
 			else:
 				print('RECORDING OFF\n', self.progression)
 				correlations = Correlations_in_kern_repository(str(self.progression))
-		if self.is_recording and (msb == 0x90 or msb == 0x80):
+		if self.is_recording and (msb == 0x90 or msb == 0x80): # recording is not
 			self.time += delta_time
 			self.progression += Note(pitch, vel, self.time, delta_time)
-			print(pitch, vel, self.time, delta_time)	# my fail: passed by value or reference?
+			# print(pitch, vel, self.time, delta_time)	# my fail: passed by value or reference?
+			# tag = f'<script>{self.progression}</script>'
 
 	def enter_listener_loop (self):	# ...
 		self.time = 0

@@ -7,15 +7,7 @@
     <p>J.N. Hummel prelude in D&flat;, op. 67, no. 15.:</p>
 
     <script>
-        // for (humdrum in sonata) displayHumdrum({
-        //     uri: humdrum.uri,
-        //     source: humdrum.source,
-        //     spacingStaff: 14,
-        //     spacingSystem: 0,
-        //     scale: 33
-        //     filter: filter
-        // })
-        displayHumdrum({
+        /*displayHumdrum({
             uri: "github://craigsapp/hummel-preludes/kern/prelude67-15.krn",
             source: "hummel-op67-no15",
             spacingStaff: 14,
@@ -37,7 +29,7 @@
             spacingSystem: 0,
             scale: 33,
             filter: "myank -m 4-5",
-        });
+        });*/
     </script>
 
     {% for resultObj in sonatas: %}
@@ -49,16 +41,54 @@
             spacingSystem: 0,
             scale: 33,
             filter: "{{resultObj.filter}}",
-        }); 
+        });
     </script>
     {% endfor %}
 
     <script type="text/x-humdrum" id="hummel-op67-no15"></script>
     <script type="text/x-humdrum" id="hummel-op67-no16"></script>
 
-    {% for n in names: %}
-    <script> alert('{{ n }}');</script>
-    {% endfor %}
+    <script>
+        var data = {{ query | tojson }};
+        alert(data.kern);
+    </script>
+    Falling melody:
+    <script>displayHumdrum({ source: "example1" })</script>
+    <script type="text/x-humdrum" id="example1">
+        data.kern
+    </script>
 
+    Rising melody:
+    <script>displayHumdrum({ source: "example2" })</script>
+    <script type="text/x-humdrum" id="example2">
+        **kern
+        *M4/4
+        =1-
+        4c
+        8dL
+        8eJ
+        4f
+        4g
+        =
+        *-
+    </script>
+
+    {{query}}
+ 
+    <!-- a form with a search button that points to /search with data test -->
+    <form action="/search" method="post">
+        <input type="text" name="query" value="
+        **kern
+        *M4/4
+        =1-
+        4g
+        8fL
+        8eJ
+        4d
+        4c
+        =
+        *-">
+        <input type="submit" value="Search">
+    </form>
 </body>
 </html>

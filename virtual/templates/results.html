@@ -1,0 +1,42 @@
+<html>
+<head>
+    <title>An example</title>
+    <script src="https://plugin.humdrum.org/scripts/humdrum-notation-plugin-worker.js"></script>
+</head>
+<body>
+
+    <script>
+        /*displayHumdrum({
+            uri: "github://craigsapp/hummel-preludes/kern/prelude67-15.krn",
+            source: "hummel-op67-no15",
+            spacingStaff: 14,
+            spacingSystem: 0,
+            scale: 33,
+        });
+        */
+    </script>
+    <script>
+        // following line processes the JSON Flask variable {{data}}
+
+
+
+
+    </script>
+    <script>
+        displayHumdrum({
+            uri: "github://craigsapp/mozart-piano-sonatas/kern/{{sonata}}",
+            //uri: "github://craigsapp/hummel-preludes/kern/prelude67-15.krn",
+            source: '{{ sonata|replace('.', '') }}',
+            //source: 'sonata03-1',
+            spacingStaff: 14,
+            spacingSystem: 0,
+            scale: 33,
+            
+            filter: "myank -m {{ filter|join(',') }}",
+        });
+    </script>
+
+    <script type="text/x-humdrum" id="{{ sonata|replace('.', '') }}"></script>
+
+</body>
+</html>

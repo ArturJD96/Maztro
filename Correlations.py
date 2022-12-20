@@ -21,18 +21,30 @@ class Correlations_in_kern_repository:
 		kern_repo_dir = kern_repository_directory or f"{self.humdrum_directory}/data/mozart/piano-sonatas/kern"
 
 		self.dict = {}	# dict with all the sonatas and their correlations in left-most spine.
-		for piece in os.listdir(kern_repo_dir):
+		for i, piece in enumerate(os.listdir(kern_repo_dir)):
 			correlated_bars = self.get_correlated_bars(f'{kern_repo_dir}/{piece}')
 			if correlated_bars:
 				self.dict[piece] = correlated_bars
-				# self.report_correlation_for_piece(piece, correlated_bars)
-
-		# for each myank bar description, perform myank on, in
-		
-
+				self.report_correlation_for_piece(piece, correlated_bars)
+				
 	def report_correlation_for_piece (self, piece, results):
-			print('testikel')
-			print(piece, results)
+		print('testikel')
+		print(piece, results)
+
+		tag = f'<script type="text/x-humdrum" id=""'
+
+		# <script type="text/x-humdrum" id="example1">
+		# **kern
+		# *M4/4
+		# =1-
+		# 4g
+		# 8fL
+		# 8eJ
+		# 4d
+		# 4c
+		# =
+		# *-
+		# </script>
 
 	def get_correlated_bars (self, kern_piece_dir: str):
 

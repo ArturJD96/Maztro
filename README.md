@@ -7,5 +7,7 @@ cd virtual
 
 source bin/activate  
 
+export FLASK_ENV=development  
+
 flask run  
 

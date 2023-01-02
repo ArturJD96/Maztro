@@ -19,7 +19,7 @@ class Correlations_in_kern_repository:
 			if not isinstance(kern_repository_directory, str): raise Exception("Argument 'kern repository directory' must be a string!")
 
 		self.humdrum_directory, self.input_file_name, self.wsl = self.selectPlatform()
-		kern_repo_dir = kern_repository_directory or f"{self.humdrum_directory}/data/mozart/piano-sonatas/kern"
+		kern_repo_dir = kern_repository_directory or f"{self.humdrum_directory}/data/mozart/piano-sonatas/test"
 
 		self.results = {}	# dict with all the sonatas and their correlations in left-most spine.
 		for i, piece in enumerate(os.listdir(kern_repo_dir)):

@@ -1,64 +1,55 @@
+{% from 'reusables.html' import searchForm %}
+{% from 'reusables.html' import results %}
+
 <html>
 <head>
     <title>An example</title>
     <script src="https://plugin.humdrum.org/scripts/humdrum-notation-plugin-worker.js"></script>
+    <link href="{{ url_for('static', filename='results.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ url_for('static', filename='google.css') }}" rel="stylesheet" type="text/css" />
+    <style>
+        #title {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
+    <div class="col1">
+        <!-- the following content is generated using searchForm() from resuables.html-->
+        {{ searchForm()}}
+        <!-- end content -->
+    </div>
+    <div class="col2">
+        <!-- the following content is generated using results() from resuables.html-->
+        <!-- { {results()} }-->
+        <!-- end content -->
+        <script>
+            {% for sonata, filter in test.items(): %}
+                {% for measure_range in filter|list: %}
+                    displayHumdrum({
+                    uri: "github://craigsapp/mozart-piano-sonatas/kern/{{sonata}}",
+                    //uri: "github://craigsapp/hummel-preludes/kern/prelude67-15.krn",
+                    source: '{{ sonata|replace('.', '') }}{{measure_range}}',
+                    //source: 'sonata03-1',
+                    spacingStaff: 14,
+                    spacingSystem: 0,
+                    scale: 33,
+                    filter: "myank -m {{ measure_range|join(',') }}",
+                    });
+                {% endfor %}
+            {% endfor %}
 
-    <script>
-        /*displayHumdrum({
-            uri: "github://craigsapp/hummel-preludes/kern/prelude67-15.krn",
-            source: "hummel-op67-no15",
-            spacingStaff: 14,
-            spacingSystem: 0,
-            scale: 33,
-        });
-        */
-    </script>
-    <script>
-        {% for measure_range in filter %}
-        displayHumdrum({
-            uri: "github://craigsapp/mozart-piano-sonatas/kern/{{sonata}}",
-            //uri: "github://craigsapp/hummel-preludes/kern/prelude67-15.krn",
-            source: '{{ sonata|replace('.', '') }}{{measure_range}}',
-            //source: 'sonata03-1',
-            spacingStaff: 14,
-            spacingSystem: 0,
-            scale: 33,
-
-            filter: "myank -m {{ measure_range|join(',') }}",
-        });
+        </script>
+        
+        {% for sonata, filter in test.items(): %}
+            <a href="#">{{sonata}}</a>
+            <p>{{filter}}</p>
+            {% for measure_range in filter|list: %}
+                <script type="text/x-humdrum" id="{{ sonata|replace('.', '') }}{{measure_range}}"></script>
+            {% endfor %}
         {% endfor %}
-
-
-        {% for sonata, filter in results.items(): %}
-        {% for measure_range in filter|safe: %}
-        console.log('{{key}}');
-        console.log("{{filter|safe}}");
-        console.log("{{measure_range}}")
-
-        displayHumdrum({
-            uri: "github://craigsapp/mozart-piano-sonatas/kern/{{sonata}}",
-            //uri: "github://craigsapp/hummel-preludes/kern/prelude67-15.krn",
-            source: '{{ sonata|replace('.', '') }}{{measure_range}}',
-            //source: 'sonata03-1',
-            spacingStaff: 14,
-            spacingSystem: 0,
-            scale: 33,
-
-            filter: "myank -m {{ measure_range|join(',') }}",
-        });
-        {% endfor %}
-        {% endfor %}
-
-    </script>
-    {% for sonata, filter in results.items(): %}
-    <a href="#">{{sonata}}</a>
-    <p>{{filter}}</p>
-    {% for measure_range in filter|safe: %}
-    <script type="text/x-humdrum" id="{{ sonata|replace('.', '') }}{{measure_range}}"></script>
-    {% endfor %}
-    {% endfor %}
+        </script>
+    </div>
 
 </body>
 </html>

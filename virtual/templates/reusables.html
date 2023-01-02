@@ -1,0 +1,120 @@
+{% macro searchForm() %}
+
+<!-- style to center title -->
+<!--<style>
+    #title {
+        text-align: center;
+    }
+</style>-->
+
+<div id="demo"></div>
+
+<!-- GOOGLE IMG -->
+<div class="google">
+    <a href="#" id="google_logo"><img src="https://www.nicepng.com/png/detail/256-2564814_piano-logo-may-19-piano-teaching-logo.png" height="20%" /></a>
+    <h1 id="title">Maztro</h1>
+</div>
+
+<!-- FORM SEARCH -->
+<div class="form">
+    <form action="/results" method="post">
+        <!--<form action="/resultsJSON" method="post">-->
+        <label for="form-search"></label>
+        <input type="text" name="data" value="test" id="form-search" placeholder="Search Maztro by playing the MIDI keyboard">
+
+        <!-- BUTTONS -->
+        <div class="buttons">
+            <!-- Clickable input tag that triggers the doQuery() function -->
+            <!--<button onclick="doQuery()">Search</button>-->
+            <input type="submit" value="Maztro Search" id="google_search">
+            <input type="submit" value="I'm Feeling Lucky" id="im_feeling_lucky">
+        </div>
+    </form>
+</div>
+
+
+<script>
+    const escapeHtml = (unsafe) => {
+        return unsafe.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
+    }
+
+    function doQuery() {
+        /*        var url = '/results';
+                var data = { data: "test" };
+                fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function (response) {
+                    return response.json();
+                }).then(function (data) {
+                    console.log(data);
+                });*/
+        const url = '/resultsJSON'
+        fetch(url)
+            .then(response => response.json())
+            .then(json => {
+                console.log(json);
+                document.getElementById("demo").innerHTML = escapeHtml(JSON.stringify(json))
+            })
+
+    }
+</script>
+
+{% endmacro %}
+
+{% macro results() %}
+
+<h1>{{results}}</h1>
+
+<script>
+{% for measure_range in filter %}
+displayHumdrum({
+    uri: "github://craigsapp/mozart-piano-sonatas/kern/{{sonata}}",
+    //uri: "github://craigsapp/hummel-preludes/kern/prelude67-15.krn",
+    source: '{{ sonata|replace('.', '') }}{{measure_range}}',
+    //source: 'sonata03-1',
+    spacingStaff: 14,
+    spacingSystem: 0,
+    scale: 33,
+
+    filter: "myank -m {{ measure_range|join(',') }}",
+});
+{% endfor %}
+
+
+{% for sonata, filter in test.items(): %}
+{% for measure_range in filter|safe: %}
+console.log('{{key}}');
+console.log("{{filter|safe}}");
+console.log("{{measure_range}}")
+
+displayHumdrum({
+    uri: "github://craigsapp/mozart-piano-sonatas/kern/{{sonata}}",
+    //uri: "github://craigsapp/hummel-preludes/kern/prelude67-15.krn",
+    source: '{{ sonata|replace('.', '') }}{{measure_range}}',
+    //source: 'sonata03-1',
+    spacingStaff: 14,
+    spacingSystem: 0,
+    scale: 33,
+
+    filter: "myank -m {{ measure_range|join(',') }}",
+});
+{% endfor %}
+{% endfor %}
+
+</script>
+{% for sonata, filter in test.items(): %}
+{% set measures = filter|safe %}
+{% for measure_range in measures: %}
+<a href="#">{{sonata}}</a>
+<p>{{measure_range|safe}}</p>
+<script type="text/x-humdrum" id="{{ sonata|replace('.', '') }}{{measure_range|safe}}"></script>
+{% endfor %}
+{% endfor %}
+
+</script>
+
+{% endmacro %}

@@ -1,0 +1,22 @@
+html, body, .col1, .col2 {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+}
+
+.col1, .col2 {
+    width: 50%;
+}
+
+.col1 {
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+.col2 {
+    margin-left: 50%;
+    overflow: auto;
+}

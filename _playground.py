@@ -11,9 +11,10 @@ Note = namedtuple('Note', ['pitch', 'velocity', 'start', 'end'])
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
 def midi_callback (event, data):
-	[msb, pitch, vel], time = event
-	note = Note(pitch, vel, 0, 10)
-	play_notes([note], 120, 120, np.sin, wait_done=False)
+	# [msb, pitch, vel], time = event
+	# note = Note(pitch, vel, 0, 10)
+	print(event)
+	# play_notes([note], 120, 120, np.sin, wait_done=False)
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 

@@ -55,22 +55,45 @@ class MainApp:
 		return self.midiin.get_ports()
 
 	def handle_incoming_midi (self, event:tuple, data=None) -> None:	# ...
-		msb_note_on  = 0x99
-		msb_note_off = 0x89
-		key_recording = 4
-		key_recording = 4
+
 		midi_message, delta_time = event
-		msb, pitch, vel = midi_message
-		if msb == msb_note_on and pitch == key_recording and vel > 0:
-			self.is_recording = not self.is_recording # toggle
-			if self.is_recording:
+
+		msb = None
+		pitch = None
+		vel = None
+
+		# manage recording:
+		condition = None # use pads of MPK or start/resume and stop button.
+		is_note = len(midi_message) == 3
+		if is_note:
+			msb, pitch, vel = midi_message
+			msb_note_on  = 0x99
+			#msb_note_off = 0x89
+			key_recording = 4
+			if (msb == msb_note_on) and (pitch == key_recording) and (vel > 0):
+				self.is_recording = not self.is_recording # toggle
+				if self.is_recording:
+					print('RECORDING ON')
+					self.progression = Progression()
+					self.time = 0
+				else:
+					print(f'RECORDING OFF\n{self.progression}')
+					correlations = Correlations_in_kern_repository(str(self.progression))
+		else:
+			msb = midi_message[0]
+			if msb == 250 or msb == 251: #midi play or resume
+				self.is_recording = True
 				print('RECORDING ON')
 				self.progression = Progression()
 				self.time = 0
-			else:
-				print('RECORDING OFF\n', self.progression)
+			elif msb == 252: #midi stop
+				print(f'RECORDING OFF\n{self.progression}')
 				correlations = Correlations_in_kern_repository(str(self.progression))
-		if self.is_recording and (msb == 0x90 or msb == 0x80): # recording is not
+							
+
+
+		# what could be recorded:
+		if self.is_recording and (msb == 0x90 or msb == 0x80):
 			self.time += delta_time
 			self.progression += Note(pitch, vel, self.time, delta_time)
 			# print(pitch, vel, self.time, delta_time)	# my fail: passed by value or reference?

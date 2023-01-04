@@ -1,0 +1,39 @@
+<html>
+<head>
+    <title>An example</title>
+    <script src="https://plugin.humdrum.org/scripts/humdrum-notation-plugin-worker.js"></script>
+</head>
+<body>
+    Falling melody:
+
+    <script type="text/x-humdrum" id="example1">
+        **kern
+        16C
+        16c
+        16B
+        16c
+        8C
+        *-
+    </script>
+
+    Rising melody:
+    <script type="text/x-humdrum" id="example2">
+        **kern
+        *M4/4
+        =1-
+        4c
+        8dL
+        8eJ
+        4f
+        4g
+        =
+        *-
+    </script>
+
+
+    <script>
+        displayHumdrum({ source: "example1" });
+        displayHumdrum({ source: "example2" });
+    </script>
+</body>
+</html>

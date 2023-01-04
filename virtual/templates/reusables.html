@@ -11,23 +11,29 @@
 
 <!-- GOOGLE IMG -->
 <div class="google">
-    <a href="#" id="google_logo"><img src="https://www.nicepng.com/png/detail/256-2564814_piano-logo-may-19-piano-teaching-logo.png" height="20%" /></a>
+    <a href="/" id="google_logo"><img src="{{ url_for('static', filename='logo.png') }}" height="20%" /></a>
     <h1 id="title">Maztro</h1>
 </div>
 
+<div id="testikel"></div>
+
 <!-- FORM SEARCH -->
 <div class="form">
-    <form action="/results" method="post">
+    <form action="/results" method="post" id="search-form">
         <!--<form action="/resultsJSON" method="post">-->
         <label for="form-search"></label>
-        <input type="text" name="data" value="test" id="form-search" placeholder="Search Maztro by playing the MIDI keyboard">
+        <!--<input type="text" name="data" value="test" id="form-search" placeholder="Search Maztro by playing the MIDI keyboard">-->
 
         <!-- BUTTONS -->
         <div class="buttons">
+            <div style="margin-left:45vw">
+                
+            </div>
             <!-- Clickable input tag that triggers the doQuery() function -->
-            <!--<button onclick="doQuery()">Search</button>-->
             <input type="submit" value="Maztro Search" id="google_search">
-            <input type="submit" value="I'm Feeling Lucky" id="im_feeling_lucky">
+            <!--<input type="button" value="Maztro Search" id="google_search" onclick="doSearch()">-->
+            <!--<input type="submit" value="Maztro Search" id="google_search">-->
+            <input type="button" value="I'm Feeling Lucky" id="im_feeling_lucky">
         </div>
     </form>
 </div>
@@ -38,29 +44,42 @@
         return unsafe.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
     }
 
-    function doQuery() {
-        /*        var url = '/results';
-                var data = { data: "test" };
-                fetch(url, {
-                    method: 'POST',
-                    body: JSON.stringify(data),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }).then(function (response) {
-                    return response.json();
-                }).then(function (data) {
-                    console.log(data);
-                });*/
-        const url = '/resultsJSON'
-        fetch(url)
-            .then(response => response.json())
-            .then(json => {
-                console.log(json);
-                document.getElementById("demo").innerHTML = escapeHtml(JSON.stringify(json))
-            })
-
+    function doSearch() {
+        fetch('/test', { method: 'GET' })
+            .then(res => res.text())
+            .then(html => {
+                document.querySelector('body').innerHTML = html;
+            });
+        console.log('testikel');
+        fetch('/results', { method: 'POST' })
+            .then(res => res.text())
+            .then(html => {
+                document.querySelector('html').innerHTML = html;
+                console.log('wow done')
+            });
     }
+
+
 </script>
 
 {% endmacro %}
+
+{% macro nav() %}
+
+<body>
+    <header>
+        <nav>
+            <ul id="nav_bar">
+                <li class="nav-links" id="gmail"><a href="#">About</a></li>
+                <li class="nav-links"><a href="#">How?</a></li>
+                <li id="sign_in"><a href="#">Sign In</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- top-left title saying "Maztro" -->
+    <div id="lil-title" style="position:fixed;">
+        <h1>Maztro</h1>
+    </div>
+
+    {% endmacro %}

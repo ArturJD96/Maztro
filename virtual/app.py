@@ -43,14 +43,18 @@ def google():
 def results():
     print('results')
     if request.method == 'POST':
-        data = request.form['data']
-        print(data)
+        start = time.perf_counter()
+        # THIS IS WHERE THE MIDI INPUT SHOULD GO
+        #data = request.form['data']
+        #print(data)
 
         # get data from Correlations.py
         c = Correlations_in_kern_repository()
+        end = time.perf_counter()
         print(c.results)
-        print("AAAAAAAAAA")
-        return render_template('results.html', test=c.results)
+        print(c.correlations)
+        num_results = sum([len(c.results[x]) for x in c.results if isinstance(c.results[x], list)])
+        return render_template('results.html', test=c.results, time=end-start, numresults = num_results, correlations = c.correlations)
     
 ############## FOR TESTING ##########################3
 # function converted to coroutine
@@ -67,7 +71,7 @@ async def get_multiple_images(number):
     return result
 
 
-@app.get('/comic')
+@app.route('/comic')
 async def hello():
     start = time.perf_counter()
     urls = await get_multiple_images(5)
@@ -78,11 +82,10 @@ async def hello():
 
     return markup
 
-
-@app.template_filter()
-def caps(text):
-    """Convert a string to all caps."""
-    return text.uppercase()
+@app.route('/test', methods=['GET', 'POST'])
+def test():
+    return render_template('testSVG.html')
+    #return render_template('results.html', test={'checking database': []})
 
     
 #@app.route('/resultsJSON', methods=['GET', 'POST'])

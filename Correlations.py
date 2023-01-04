@@ -8,6 +8,7 @@ class Correlations_in_kern_repository:
 
 	CORRELATION_MINIMUM = 0.99
 	results = {} # remove it
+	correlations = {}
 
 	def __init__ (self, kern_input:str=None, kern_repository_directory:str=None):
 
@@ -24,10 +25,12 @@ class Correlations_in_kern_repository:
 			correlated_bars_with_correlations = self.get_correlated_bars(f'{kern_repo_dir}/{piece}')
 			print(correlated_bars_with_correlations)
 			if correlated_bars_with_correlations:
-				self.results[piece] = correlated_bars_with_correlations
+				self.results[piece] = [i[0] for i in correlated_bars_with_correlations]
+				self.correlations[piece] = [i[1] for i in correlated_bars_with_correlations]
 				Correlations_in_kern_repository.results
 
 		print("CHECKING FINISHED.")
+		print(self.results)
 
 	def report_correlation_for_piece (self, piece, results):
 		print('testikel')
@@ -50,9 +53,13 @@ class Correlations_in_kern_repository:
 		if not isinstance(kern_piece_dir, str): raise Exception("Argument 'kern_piece_dir' must be a string!")
 		print(f'checking {kern_piece_dir}')
 		self.run_query_using_cmd_and_create_files_with_results(kern_piece_dir)
-		bar_numbers_with_correlations = self.get_correlated_bar_numbers()
-		bars_as_myank_strings = self.get_bars_as_myank_strings(bar_numbers_with_correlations)
-		return bars_as_myank_strings
+		bar_numbers_with_correlations = self.get_correlated_bar_numbers() # E.G. [51, 51, 51, 52, 52, 52, 118, 118, 118, 119, 119, 119]
+		print(bar_numbers_with_correlations)
+		bar_numbers_with_correlations = list(set(bar_numbers_with_correlations))
+		print(bar_numbers_with_correlations)
+		#bars_as_myank_strings = self.get_bars_as_myank_strings(bar_numbers_with_correlations) #E.G ['51', '51', '51-52', '52', '118', '118', '118-119']
+		#return bars_as_myank_strings
+		return bar_numbers_with_correlations
 
 	# def run_query_using_cmd_and_create_files_with_results (self, kern_piece_dir:str):
 
@@ -145,7 +152,7 @@ class Correlations_in_kern_repository:
 							barline_found = True
 							try:
 								bar_number = int(line_with_barline[1:])
-								bar_numbers_with_correlations.append(bar_number)
+								bar_numbers_with_correlations.append((bar_number, correlation))
 							except ValueError:
 								pass
 		return bar_numbers_with_correlations

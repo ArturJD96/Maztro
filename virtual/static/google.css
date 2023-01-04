@@ -3,6 +3,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Roboto', sans-serif;
+    background-color: #FFFCF1;
 }
 
 header {
@@ -38,6 +39,14 @@ ul {
 a {
     text-decoration: none;
     color: inherit;
+}
+
+.sonata {
+    color: #1a0dab;
+}
+
+.sonata:hover {
+    text-decoration: underline;
 }
 
 li.nav-links a:hover {

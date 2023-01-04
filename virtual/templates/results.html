@@ -17,7 +17,7 @@
             margin-bottom:50px;
         }
         .filename {
-            margin-left: 3vw;
+            margin-left: 0vw;
         }
     </style>
 </head>
@@ -52,7 +52,6 @@
                         spacingSystem: 0,
                         scale: 33,
                         filter: "myank -m {{ measure_range }}",
-                        header: true,
                         bottomMarginHeader: 0,
                     });
                 {% endfor %}
@@ -62,10 +61,12 @@
 
         {% for sonata, filter in test.items(): %}
         {% for measure_range in filter|list: %}
-        <span class="filename" style="font-size:12px">bass similarity score: {{ correlations[sonata][loop.index0] * 100}} % </span>
+        <span class="filename" style="font-size:12px">bass similarity score: <b>{{ correlations[sonata][loop.index0] * 100}} % </b> </span>
         <br />
         <a href="http://verovio.humdrum.org/?file=mozart/sonatas/{{sonata}}&filter=myank -m {{ measure_range }}" class="sonata" target="_blank">
-            <span class="filename">Piano Sonata No. {{sonata}}: bar {{measure_range}}</span>
+            <span class="filename">Piano Sonata No. {{sonata[6:-4]}} >> bar {{measure_range}}</span>
+            <br />
+            <span class ="filename" style="color:black; font-size:14px"> Wolfgang Amadeus Mozart </span>
             <script type="text/x-humdrum" id="{{ sonata|replace('.', '') }}{{measure_range}}"></script>
         </a>
         {% endfor %}

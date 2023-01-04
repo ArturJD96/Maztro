@@ -27,14 +27,14 @@
             {% for sonata, filter in test.items(): %}
                 {% for measure_range in filter|list: %}
                     displayHumdrum({
-                    uri: "github://craigsapp/mozart-piano-sonatas/kern/{{sonata}}",
-                    //uri: "github://craigsapp/hummel-preludes/kern/prelude67-15.krn",
-                    source: '{{ sonata|replace('.', '') }}{{measure_range}}',
-                    //source: 'sonata03-1',
-                    spacingStaff: 14,
-                    spacingSystem: 0,
-                    scale: 33,
-                    filter: "myank -m {{ measure_range|join(',') }}",
+                        uri: "github://craigsapp/mozart-piano-sonatas/kern/{{sonata}}",
+                        //uri: "github://craigsapp/hummel-preludes/kern/prelude67-15.krn",
+                        source: '{{ sonata|replace('.', '') }}{{measure_range}}',
+                        //source: 'sonata03-1',
+                        spacingStaff: 14,
+                        spacingSystem: 0,
+                        scale: 33,
+                        filter: "myank -m {{ measure_range }}",
                     });
                 {% endfor %}
             {% endfor %}
@@ -42,10 +42,11 @@
         </script>
         
         {% for sonata, filter in test.items(): %}
-            <a href="#">{{sonata}}</a>
-            <p>{{filter}}</p>
             {% for measure_range in filter|list: %}
-                <script type="text/x-humdrum" id="{{ sonata|replace('.', '') }}{{measure_range}}"></script>
+                <a href="#">
+                    {{sonata}}: bar {{measure_range}}
+                    <script type="text/x-humdrum" id="{{ sonata|replace('.', '') }}{{measure_range}}"></script>
+                </a>
             {% endfor %}
         {% endfor %}
         </script>

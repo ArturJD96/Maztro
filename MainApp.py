@@ -4,6 +4,7 @@ import sys
 import time
 import asyncio
 import rtmidi
+import requests
 from Correlations import Correlations_in_kern_repository
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#
@@ -78,7 +79,9 @@ class MainApp:
 					self.time = 0
 				else:
 					print(f'RECORDING OFF\n{self.progression}')
+					requests.post('http://127.0.0.1:5000/', data = {"inputkern": str(self.progression)})
 					correlations = Correlations_in_kern_repository(str(self.progression))
+					
 		else:
 			msb = midi_message[0]
 			if msb == 250 or msb == 251: #midi play or resume

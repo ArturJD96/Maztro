@@ -11,11 +11,15 @@
 
 <!-- GOOGLE IMG -->
 <div class="google">
-    <a href="/" id="google_logo"><img src="{{ url_for('static', filename='logo.png') }}" height="20%" /></a>
-    <h1 id="title">Maztro</h1>
+    <h1 id="title">
+        <a href="/" id="google_logo">
+            <img style='vertical-align:middle;' src='{{ url_for('static', filename='logo.png') }}' height="10%">
+            <div style='vertical-align:middle; display:inline;'>
+                Maztro
+            </div>
+        </a>
+    </h1>
 </div>
-
-<div id="testikel"></div>
 
 <!-- FORM SEARCH -->
 <div class="form">
@@ -26,8 +30,29 @@
 
         <!-- BUTTONS -->
         <div class="buttons">
-            <div style="margin-left:45vw">
-                
+            Your input:
+            <div style="margin-left:45%">
+                <script type="text/x-humdrum" id="input">
+                    **kern
+                    *clefG2
+                    C
+                    c
+                    B
+                    c
+                    C
+                    *-
+                </script>
+                <script>
+                    displayHumdrum({
+                        source: "input",
+                        scale: 35,
+                        pageWidth: 750,
+                        pageMarginLeft: 0,
+                        pageMarginTop: 0,
+                        spacingStaff: 14,
+                        spacingSystem: 0,
+                    });
+                </script>
             </div>
             <!-- Clickable input tag that triggers the doQuery() function -->
             <input type="submit" value="Maztro Search" id="google_search">

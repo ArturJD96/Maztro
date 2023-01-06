@@ -79,7 +79,6 @@ class MainApp:
 					self.time = 0
 				else:
 					print(f'RECORDING OFF\n{self.progression}')
-					requests.post('http://127.0.0.1:5000/', data = {"inputkern": str(self.progression)})
 					correlations = Correlations_in_kern_repository(str(self.progression))
 					
 		else:

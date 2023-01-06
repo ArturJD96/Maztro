@@ -12,14 +12,98 @@
         #title {
             text-align: center;
         }
+
         #result-stats {
             color: #70757a;
-            margin-bottom:50px;
+            margin-bottom: 50px;
         }
+
         .filename {
             margin-left: 0vw;
         }
     </style>
+    <script>
+        // vim: ts=3
+        //
+        // Function to highlight pitch classes in Hummel example on main page.
+        //
+
+
+        //////////////////////////////
+        //
+        // highlightPitchClasses -- When the mouse is moved over a note in Humdrum-generated
+        //   notation, similar pitch classes in the notation will be highlighted.
+        //
+
+        function highlightPitchClasses(id) {
+            var entry = HNP.entries[id];
+            if (!entry) {
+                console.log("Cannot find entry for id", id);
+                return;
+            }
+            if (!entry.container) {
+                console.log("Entry", id, "is not initalized");
+                return;
+            }
+            var svg = entry.container.querySelector("#" + id + "-svg svg");
+            if (!svg) {
+                console.log("Cannot find SVG image for", id);
+                return;
+            }
+
+            var i;
+            svg.addEventListener("mouseover", function (event) {
+                var elements = svg.querySelectorAll(":hover");
+                var sourcenote = null;
+                for (i = 0; i < elements.length; i++) {
+                    if (elements[i].nodeName != "g") {
+                        continue;
+                    }
+                    var classname = elements[i].getAttribute("class");
+                    if (classname.match(/\bnote\b/)) {
+                        sourcenote = elements[i];
+                    }
+                }
+                var notes = svg.querySelectorAll("g.note");
+                if (!sourcenote) {
+                    for (i = 0; i < notes.length; i++) {
+                        notes[i].style.fill = "";
+                    }
+                } else {
+                    var matches = sourcenote.getAttribute("class").match(/(b40c-\d+)/);
+                    var matches2 = sourcenote.getAttribute("class").match(/pname-([a-g])/);
+                    var color = "red";
+                    if (matches2) {
+                        var pitchname = matches2[1];
+                        if (pitchname === "c") {
+                            color = "chartreuse";
+                        } else if (pitchname === "d") {
+                            color = "deepskyblue";
+                        } else if (pitchname === "e") {
+                            color = "red";
+                        } else if (pitchname === "f") {
+                            color = "gold";
+                        } else if (pitchname === "g") {
+                            color = "lightblue";
+                        } else if (pitchname === "a") {
+                            color = "mediumpurple";
+                        } else if (pitchname === "b") {
+                            color = "chocolate";
+                        }
+                    }
+                    if (matches) {
+                        var targetclass = "\\b" + matches[1] + "\\b";
+                        var re = new RegExp(targetclass);
+                        for (i = 0; i < notes.length; i++) {
+                            if (notes[i].getAttribute("class").match(re)) {
+                                notes[i].style.fill = color;
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
 </head>
 <body>
     {{ nav() }}
@@ -29,50 +113,53 @@
         <!-- end content -->
     </div>
     <div class="col2">
-        <div id="result-stats">
-            {% if numresults is defined %}
-            {{ numresults }} results found in {{ time }} seconds
-            {% else %}
-            searching database...
-            {% endif %}
-        </div>
-        <script>
-            {% for sonata, filter in test.items(): %}
-                {% for measure_range in filter|list: %}
-                    displayHumdrum({
-                        //uri: "github://craigsapp/mozart-piano-sonatas/kern/{{sonata}}",
-                        url: "{{ url_for('static', filename='kern/') }}{{sonata}}",
-                        //uri: "github://craigsapp/hummel-preludes/kern/prelude67-15.krn",
-                        source: '{{ sonata|replace('.', '') }}{{measure_range}}',
-                        //source: 'sonata03-1',
-                        pageMarginBottom: 150,
-                        pageMarginTop: 10,
-                        pageWidth: 750,
-                        spacingStaff: 14,
-                        spacingSystem: 0,
-                        scale: 50,
-                        filter: "myank -m {{ measure_range }}",
-                        bottomMarginHeader: 0,
-                    });
+        <div class="col2content">
+            <div id="result-stats" style="margin-top: 30px;">
+                {% if numresults is defined %}
+                {{ numresults }} results found in {{ time }} seconds
+                {% else %}
+                searching database...
+                {% endif %}
+            </div>
+            <script>
+                {% for sonata, filter in test.items(): %}
+                    {% for measure_range in filter|list: %}
+                        displayHumdrum({
+                            //uri: "github://craigsapp/mozart-piano-sonatas/kern/{{sonata}}",
+                            url: "{{ url_for('static', filename='kern/') }}{{sonata}}",
+                            //uri: "github://craigsapp/hummel-preludes/kern/prelude67-15.krn",
+                            source: '{{ sonata|replace('.', '') }}{{measure_range}}',
+                            //source: 'sonata03-1',
+                            pageMarginBottom: 150,
+                            pageMarginTop: 10,
+                            pageWidth: 750,
+                            spacingStaff: 14,
+                            spacingSystem: 0,
+                            scale: 50,
+                            filter: "myank -m {{ measure_range }}",
+                            bottomMarginHeader: 0,
+                            postFunction: highlightPitchClasses
+                        });
+                    {% endfor %}
                 {% endfor %}
-            {% endfor %}
 
-        </script>
+            </script>
 
-        {% for sonata, filter in test.items(): %}
-        {% for measure_range in filter|list: %}
-        <br />
-        <span class="filename" style="font-size:12px">bass similarity score: <b>{{ correlations[sonata][loop.index0] * 100}} % </b> </span>
-        <br />
-        <a href="http://verovio.humdrum.org/?file=mozart/sonatas/{{sonata}}&filter=myank -m {{ measure_range }}" class="sonata" target="_blank">
-            <span class="filename">Piano Sonata No. {{sonata[6:-4]}} >> bar {{measure_range}}</span>
+            {% for sonata, filter in test.items(): %}
+            {% for measure_range in filter|list: %}
             <br />
-            <span class="filename" style="color:black; font-size:14px"> Wolfgang Amadeus Mozart </span>
-        </a>
-        <script type="text/x-humdrum" id="{{ sonata|replace('.', '') }}{{measure_range}}"></script>
-        {% endfor %}
-        {% endfor %}
-        </script>
+            <span class="filename" style="font-size:12px">bass similarity score: <b>{{ correlations[sonata][loop.index0] * 100}} % </b> </span>
+            <br />
+            <a href="http://verovio.humdrum.org/?file=mozart/sonatas/{{sonata}}&filter=myank -m {{ measure_range }}" class="sonata" target="_blank">
+                <span class="filename">Piano Sonata No. {{sonata[6:-4]}} >> bar {{measure_range}}</span>
+                <br />
+                <span class="filename" style="color:black; font-size:14px"> Wolfgang Amadeus Mozart </span>
+            </a>
+            <script type="text/x-humdrum" id="{{ sonata|replace('.', '') }}{{measure_range}}"></script>
+            {% endfor %}
+            {% endfor %}
+            </script>
+        </div>
     </div>
 
 </body>

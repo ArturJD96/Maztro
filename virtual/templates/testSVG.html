@@ -2,6 +2,95 @@
 <head>
     <title>An example</title>
     <script src="https://plugin.humdrum.org/scripts/humdrum-notation-plugin-worker.js"></script>
+    <script>
+        // vim: ts=3
+        //
+        // Function to highlight pitch classes in Hummel example on main page.
+        //
+
+
+        //////////////////////////////
+        //
+        // highlightPitchClasses -- When the mouse is moved over a note in Humdrum-generated
+        //   notation, similar pitch classes in the notation will be highlighted.
+        //
+
+        function highlightPitchClasses(id) {
+            var entry = HNP.entries[id];
+            if (!entry) {
+                console.log("Cannot find entry for id", id);
+                return;
+            }
+            if (!entry.container) {
+                console.log("Entry", id, "is not initalized");
+                return;
+            }
+            var svg = entry.container.querySelector("#" + id + "-svg svg");
+            if (!svg) {
+                console.log("Cannot find SVG image for", id);
+                return;
+            }
+
+            var i;
+            svg.addEventListener("mouseover", function (event) {
+                var elements = svg.querySelectorAll(":hover");
+                alert(elements.length);
+                var sourcenote = null;
+                for (i = 0; i < elements.length; i++) {
+                    alert(elements[i])
+                    if (elements[i].nodeName != "g") {
+                        continue;
+                    }
+                    var classname = elements[i].getAttribute("class");
+                    alert(classname);
+                    if (classname.match(/\bnote\b/)) {
+                        sourcenote = elements[i];
+                    }
+                }
+                var notes = svg.querySelectorAll("g.note");
+                if (!sourcenote) {
+                    //alert('a')
+                    for (i = 0; i < notes.length; i++) {
+                        notes[i].style.fill = "";
+                    }
+                } else {
+                    alert('b')
+                    var matches = sourcenote.getAttribute("class").match(/(b40c-\d+)/);
+                    var matches2 = sourcenote.getAttribute("class").match(/pname-([a-g])/);
+                    var color = "red";
+                    if (matches2) {
+                        var pitchname = matches2[1];
+                        if (pitchname === "c") {
+                            color = "chartreuse";
+                        } else if (pitchname === "d") {
+                            color = "deepskyblue";
+                        } else if (pitchname === "e") {
+                            color = "red";
+                        } else if (pitchname === "f") {
+                            color = "gold";
+                        } else if (pitchname === "g") {
+                            color = "lightblue";
+                        } else if (pitchname === "a") {
+                            color = "mediumpurple";
+                        } else if (pitchname === "b") {
+                            color = "chocolate";
+                        }
+                    }
+                    if (matches) {
+                        alert('c')
+                        var targetclass = "\\b" + matches[1] + "\\b";
+                        var re = new RegExp(targetclass);
+                        for (i = 0; i < notes.length; i++) {
+                            if (notes[i].getAttribute("class").match(re)) {
+                                notes[i].style.fill = color;
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+
 </head>
 <body>
     Falling melody:
@@ -30,6 +119,16 @@
         *-
     </script>
 
+    <script>
+        displayHumdrum({
+            uri: "github://craigsapp/hummel-preludes/kern/prelude67-15.krn",
+            source: "hummel-op67-no15",
+            scale: 33,
+            postFunction: highlightPitchClasses
+        });
+    </script>
+
+    <script type="text/x-humdrum" id="hummel-op67-no15"></script>
 
     <script>
         displayHumdrum({ source: "example1" });

@@ -37,3 +37,10 @@ class Progression:
 				pass
 		else:
 			return '**midi\n' + ''.join(f'{n.pitch}\n' for n in self.notes if n.velocity > 0) + '*-'
+
+	def get_display (self) -> str:
+		s = '**kern\t**kern\n*clefF4\t*clefG2\n'
+		for note in self.notes:
+			s += f'{note}\t.' if note.pitch >= 60 else f'.\t{note.pitch}'
+			s += '\n'
+		return s

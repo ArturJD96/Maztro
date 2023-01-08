@@ -9,7 +9,9 @@ import requests
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
 from Note import Note
+from Sequence import Sequence
 from Progression import Progression
+from MidiListener import Listener
 from Utilities import Hardware_Warning
 from Correlations import Correlations_in_kern_repository
 
@@ -28,6 +30,10 @@ class MainApp:
 
 		self._debug:bool = debug # outputs mock midi input for testing purposes when keyboard no keyboard detected
 		self._offline:bool = offline # turns off posting requests in handle_incoming_midi method (the midi listener func).
+
+	@property
+	def ports (self) -> list[str]:
+		return self.midiin.get_ports()
 
 	def __call__ (self):
 		self.midiin.set_callback(self.handle_incoming_midi, self)
@@ -51,10 +57,6 @@ class MainApp:
 
 	def __exit__ (self, exception_type, exception_value, traceback):
 		self.midiin.__exit__(*sys.exc_info())
-
-	@property
-	def ports (self) -> list[str]:
-		return self.midiin.get_ports()
 
 	def handle_incoming_midi (self, event:tuple, data=None) -> None:	# ...
 

@@ -1,3 +1,23 @@
+{% macro nav() %}
+<!--
+<body>
+    <header>
+        <nav>
+            <ul id="nav_bar">
+                <li class="nav-links" id="gmail"><a href="#">About</a></li>
+                <li class="nav-links"><a href="#">How?</a></li>
+                <li id="sign_in"><a href="#">Sign In</a></li>
+            </ul>
+        </nav>
+    </header>
+    -->
+<!--<div id="lil-title" style="position:fixed; margin-left: 10px">
+    <h1>Maztro</h1>
+</div>-->
+
+{% endmacro %}
+
+
 {% macro searchForm() %}
 
 <!-- style to center title -->
@@ -7,14 +27,31 @@
     }
 </style>-->
 
-<div id="demo"></div>
+<style>
+    .spinning {
+        animation-name: spin;
+        animation-duration: 2s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(359deg);
+        }
+    }
+</style>
 
 <!-- GOOGLE IMG -->
 <div class="google">
     <h1 id="title">
         <a href="/" id="google_logo">
-            <img style='vertical-align:middle;' src='{{ url_for('static', filename='logo.png') }}' height="10%">
-            <div style='vertical-align:middle; display:inline;'>
+            <img id="logo" style='vertical-align:middle;' src='{{ url_for('static', filename='logo.png') }}' height="10%">
+            <div style='vertical-align:middle; display:inline; font-size: 10vh;'>
                 Maztro
             </div>
         </a>
@@ -27,19 +64,19 @@
         <!--<form action="/resultsJSON" method="post">-->
         <label for="form-search"></label>
         <!--<input type="text" name="data" value="test" id="form-search" placeholder="Search Maztro by playing the MIDI keyboard">-->
-
         <!-- BUTTONS -->
         <div class="buttons">
-            Your input:
-            <div style="margin-left:45%">
-                <script type="text/x-humdrum" id="input">
+            <!--<div style="margin-left: 45%; background-color: white; margin-right: 25vw; border: 1px solid grey; margin-bottom: 50px; margin-top: -10px;">-->
+            <p>Your input:</p>
+            <div style="margin-left: 20vw; background-color: white; margin-right: 20vw; border: 1px solid blue; margin-bottom: 50px; margin-top: -10px">
+
+                <script type="text/humdrum" id="input">
                     **kern
-                    *clefG2
-                    C
                     c
-                    B
+                    cc
+                    b
+                    cc
                     c
-                    C
                     *-
                 </script>
                 <script>
@@ -51,14 +88,19 @@
                         pageMarginTop: 0,
                         spacingStaff: 14,
                         spacingSystem: 0,
+                        barLineWidth: 0.10,
+                        staffLineWidth: 0.30,
+                        stemWidth: 0.50,
                     });
                 </script>
             </div>
             <!-- Clickable input tag that triggers the doQuery() function -->
-            <input type="submit" value="Maztro Search" id="google_search">
+            <input type="submit" value="Maztro Search" id="google_search" onclick="document.getElementById('logo').classList.add('spinning');">
             <!--<input type="button" value="Maztro Search" id="google_search" onclick="doSearch()">-->
             <!--<input type="submit" value="Maztro Search" id="google_search">-->
-            <input type="button" value="I'm Feeling Lucky" id="im_feeling_lucky">
+            <br />
+            <br />
+            <a href="/how" style="color: blue; text-decoration: underline;">Help? how does this work?</a>
         </div>
     </form>
 </div>
@@ -89,22 +131,3 @@
 
 {% endmacro %}
 
-{% macro nav() %}
-
-<body>
-    <header>
-        <nav>
-            <ul id="nav_bar">
-                <li class="nav-links" id="gmail"><a href="#">About</a></li>
-                <li class="nav-links"><a href="#">How?</a></li>
-                <li id="sign_in"><a href="#">Sign In</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <!-- top-left title saying "Maztro" -->
-    <div id="lil-title" style="position:fixed;">
-        <h1>Maztro</h1>
-    </div>
-
-    {% endmacro %}

@@ -1,0 +1,36 @@
+{% from 'reusables.html' import searchForm %}
+{% from 'reusables.html' import nav %}
+
+<head>
+    <title>Google Homepage</title>
+    <script src="https://plugin.humdrum.org/scripts/humdrum-notation-plugin-worker.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link href="{{ url_for('static', filename='results.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ url_for('static', filename='google.css') }}" rel="stylesheet" type="text/css" />
+    <style>
+        #title {
+            text-align: center;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+</head>
+
+<!-- GOOGLE IMG -->
+<div class="google">
+    <h1 id="title">
+        <a href="/" id="google_logo">
+            <img id="logo" style='vertical-align:middle;' src='{{ url_for('static', filename='logo.png') }}' height="10%">
+            <div style='vertical-align:middle; display:inline; font-size: 10vh;'>
+                Maztro
+            </div>
+        </a>
+    </h1>
+</div>
+
+<div style="width: 40vw; margin: 0 auto; text-align: center">
+
+    <p style="color: #808080">This project presents a novel approach to allow you to intuitively query a database of Mozart's music repertoire using a MIDI keyboard. By allowing you to input a melody, Maztro is able to identify and retrieve pieces in the database that are similar to the query. Resembling a Google for classical music, Maztro allows you to quickly and easily find pieces that resemble what you originally inputted.</p>
+
+</div>
+
+</body>

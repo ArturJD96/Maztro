@@ -79,8 +79,11 @@ class MainApp:
 					self.time = 0
 				else:
 					print(f'RECORDING OFF\n{self.progression}')
+<<<<<<< HEAD
 					print('KERN TO BE DISPLAYED AS INPUT:\n' + self.progression.get_display())
 					requests.post('http://127.0.0.1:5000', data = {"inputkern": str(self.progression)})
+=======
+>>>>>>> e8355f05500acd74efae208928cd072eaf9133c3
 					correlations = Correlations_in_kern_repository(str(self.progression))
 		else:
 			msb = midi_message[0]

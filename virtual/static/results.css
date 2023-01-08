@@ -14,9 +14,16 @@ body {
     position: fixed;
     left: 0;
     top: 0;
+    margin-right: 100px;
+    padding-right: -50px;
+    border-right: 1px solid rgb(128, 128, 128, .5);
 }
 
 .col2 {
     margin-left: 50%;
     overflow: auto;
+}
+
+.col2content {
+    padding-left: 5vw;
 }

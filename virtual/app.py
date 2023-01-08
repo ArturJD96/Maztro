@@ -84,9 +84,12 @@ async def hello():
 
 @app.route('/test', methods=['GET', 'POST'])
 def test():
-    return render_template('testSVG.html')
+    return render_template('test.html')
     #return render_template('results.html', test={'checking database': []})
 
+@app.route('/how')
+def how():
+    return render_template('how.html')
     
 #@app.route('/resultsJSON', methods=['GET', 'POST'])
 #def resultsJSON():

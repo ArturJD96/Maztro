@@ -24,6 +24,7 @@ class Progression:
 		self.notes.append(note)
 		return self
 
+
 	def midi2kern(self) -> str:
 		if not self.chord_mode:
 			return '**kern\n' + ''.join(f'{note}\n' for note in self.notes if note.velocity > 0)

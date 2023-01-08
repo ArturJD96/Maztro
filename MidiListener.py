@@ -1,15 +1,15 @@
 import requests
 import time
 
-import Sequence
+from Progression import Progression
+from Correlations import Correlations_in_kern_repository
 
-class Listener:
+class MidiListener:
 
-	def __init__ (self, progression, sequencer, debug=False, offline=False):
-		print(type(progression))
-		print(type(sequencer))
-		self.progression = progression
-		self.sequence = sequence
+	def __init__ (self, sequence, debug=False, offline=False):
+		print(type(sequence))
+		self.progression:'Progression' = None
+		self.sequence:'Sequence' = sequence
 
 		self._debug = debug
 		self._offline = offline
@@ -63,27 +63,30 @@ class Listener:
 			# print(pitch, vel, self.time, delta_time)	# my fail: passed by value or reference?
 			# tag = f'<script>{self.progression}</script>'
 
-	def enter_listener_loop (self):
-		flag = True
-		while True:
-			if self._debug and flag:
-				print('~ ~ ~ mock midi ~ ~ ~')
-				messages = [
-					[250],
-					[0x99,80,127],
-					[0x89,80,0],
-					[0x99,78,127],
-					[0x89,78,0],
-					[0x99,72,127],
-					[0x89,72,0],
-					[252]
-				]
-				for message in messages:
-					# mocking midi callback
-					self.handle_incoming_midi((message, 0))
-					time.sleep(0.1)
-				print('~ ~ ~ all messages sent ~ ~ ~')
-				flag = False
-			else:
-				print('dupa')
-				time.sleep(0.05)
+	@staticmethod
+	def activate (listener:'MidiListener', debug=False):
+		if debug:
+			MidiListener.mock(listener)
+		else:
+			while True:
+				time.sleep(0.05)	# reduce resolution to save CPU.
+				print('...listening...')
+
+	@staticmethod
+	def mock (listener:'MidiListener'):
+		print('~ ~ ~ send mock midi messages ~ ~ ~')
+		messages = [
+			[250],
+			[0x99,80,127],
+			[0x89,80,0],
+			[0x99,78,127],
+			[0x89,78,0],
+			[0x99,72,127],
+			[0x89,72,0],
+			[252]
+		]
+		for message in messages:
+			# mocking midi callback
+			listener((message, 0))
+			time.sleep(0.1)
+		print('~ ~ ~ all mock midi messages sent ~ ~ ~')

@@ -11,10 +11,10 @@ class Sequence:
 		return self._records
 	
 	@records.setter
-	def records(self, switch):
-		self._records = switch
+	def records(self, state):
+		self._records = state
 		if self._records:
 			self.time = 0
 
-	def toggle(self):
+	def toggle(self, state:bool=None):
 		self.records = not self._records

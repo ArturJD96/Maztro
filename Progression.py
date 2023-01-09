@@ -42,6 +42,6 @@ class Progression:
 	def get_display (self) -> str:
 		s = '**kern\t**kern\n*clefF4\t*clefG2\n'
 		for note in self.notes:
-			s += f'{note}\t.' if note.pitch >= 60 else f'.\t{note.pitch}'
+			s += f'{note}\t.' if note.pitch >= 60 else f'.\t{note}'
 			s += '\n'
 		return s

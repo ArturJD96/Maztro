@@ -8,7 +8,6 @@ import requests
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
-from Note import Note
 from Sequence import Sequence
 from MidiListener import MidiListener
 from Utilities import Hardware_Warning

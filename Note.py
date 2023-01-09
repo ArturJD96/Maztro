@@ -12,13 +12,23 @@ class Note:
 		self.start = start_time
 		self.duration = delta_time
 
-	def __str__ (self) -> str:						# as humdrum token
-		mockRhythmValue = '4'
-		m = ((self.pitch-60) % 12)	# pitch class
-		n = Note.names[m] # pitch name
-		n = n if self.pitch >= 60 else n.capitalize() # capitalize if below middle C
-		o = abs(int((self.pitch/12)-5)) # calculate octave (0 is the octave of middle C)
+	def __str__ (self) -> str:		# as humdrum token
+
+		m:int = (self.pitch-60) % 12	# pitch class
+		n:str = Note.names[m] 			# pitch name
+
+		if self.pitch < 60:
+			n = n.capitalize()
+
+		o = int(self.pitch/12) # calculate octave (5 is the octave of middle C)
+		if o < 5:
+			o *= -1
+			o += 4
+		else:
+			o -= 5
+
 		while o:
 			n = n[0] + n # mark octave using humdrum note name repetition.
 			o -= 1
-		return str(n) # add mockRhythmValue, but currently not needed.
+
+		return n

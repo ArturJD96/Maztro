@@ -1,4 +1,5 @@
 import typing
+import os
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
@@ -8,10 +9,17 @@ from Note import Note
 
 class Progression:
 
+	directory = 'progressions'
+	default_name = 'progression'
+
 	def __init__ (self):
 		self.notes = [] # array of tuples
 		self.mode = 'midi2kern'
 		self.chord_mode = False
+		self.name:str = self.make_name()
+		print(os.listdir(Progression.directory))
+		with open(self.name, 'a+') as prog:
+			prog.write('**kern\n')
 
 	def __str__ (self) -> str:
 		match self.mode:
@@ -20,10 +28,27 @@ class Progression:
 			case 'midi2kern':
 				return self.midi2kern()
 
-	def __iadd__ (self, note:Note) -> 'Progression':
+	def __iadd__ (self, note:'Note') -> 'Progression':
 		self.notes.append(note)
+		if note.velocity > 0:
+			with open(self.name, 'a') as prog:
+				prog.write(f'{note}\n')
 		return self
 
+	def close(self):
+		with open(self.name, 'a') as prog:
+			prog.write('*-')
+
+	def make_name(self) -> str:
+		#name = f'{Progression.directory}/{Progression.default_name}_'
+		file_names = os.listdir(Progression.directory)
+		index = 1
+		for n in file_names:
+			if n.startswith(Progression.default_name):
+				i = int(n.split('.')[0].split('_')[-1])
+				if index < i:
+					index = i + 1
+		return f'{Progression.directory}/{Progression.default_name}_{index}.krn'
 
 	def midi2kern(self) -> str:
 		if not self.chord_mode:

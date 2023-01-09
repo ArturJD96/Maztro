@@ -10,7 +10,7 @@ import time
 
 # following lines circumvent the proper way of including this file but idgaf
 import sys
-sys.path.append('../')
+sys.path.append('../')          # ! ! ! this might be usefull for folder restructuring
 from Correlations import *
 
 app = Flask(__name__)

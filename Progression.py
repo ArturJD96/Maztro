@@ -16,10 +16,7 @@ class Progression:
 		self.notes = [] # array of tuples
 		self.mode = 'midi2kern'
 		self.chord_mode = False
-		self.name:str = self.make_name()
-		print(os.listdir(Progression.directory))
-		with open(self.name, 'a+') as prog:
-			prog.write('**kern\n')
+		self.display = ProgressionDisplay()
 
 	def __str__ (self) -> str:
 		match self.mode:
@@ -31,24 +28,8 @@ class Progression:
 	def __iadd__ (self, note:'Note') -> 'Progression':
 		self.notes.append(note)
 		if note.velocity > 0:
-			with open(self.name, 'a') as prog:
-				prog.write(f'{note}\n')
+			self.display.append(note)
 		return self
-
-	def close(self):
-		with open(self.name, 'a') as prog:
-			prog.write('*-')
-
-	def make_name(self) -> str:
-		#name = f'{Progression.directory}/{Progression.default_name}_'
-		file_names = os.listdir(Progression.directory)
-		index = 1
-		for n in file_names:
-			if n.startswith(Progression.default_name):
-				i = int(n.split('.')[0].split('_')[-1])
-				if index < i:
-					index = i + 1
-		return f'{Progression.directory}/{Progression.default_name}_{index}.krn'
 
 	def midi2kern(self) -> str:
 		if not self.chord_mode:
@@ -70,3 +51,34 @@ class Progression:
 			s += f'{note}\t.' if note.pitch >= 60 else f'.\t{note}'
 			s += '\n'
 		return s
+
+
+class ProgressionDisplay:
+
+	directory = 'progressions'
+	default_name = 'progression'
+
+	def __init__ (self):
+		self.name:str = self.make_name()
+		self.kern = '**kern\t**kern\n*clefF4\t*clefG2\n*-\t*-'
+
+	def make_name(self) -> str:
+		file_names = os.listdir(Progression.directory)
+		index = 1
+		for n in file_names:
+			if n.startswith(Progression.default_name):
+				i = int(n.split('.')[0].split('_')[-1])
+				if index < i:
+					index = i + 1
+		return f'{Progression.directory}/{Progression.default_name}_{index}.krn'
+
+	def append (self, note:'Note') -> None:
+		i = self.kern.rfind('\n')
+		line = f'{note}\t.' if note.pitch >= 60 else f'.\t{note}'
+		self.kern = f'{self.kern[:i+1]}{line}{self.kern[i:]}'
+		with open(self.name, 'w') as file:
+			file.write(self.kern)
+
+	@staticmethod
+	def reset_directory ():
+		pass

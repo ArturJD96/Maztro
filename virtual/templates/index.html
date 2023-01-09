@@ -1,132 +1,36 @@
-<!-- TASK: display sonata17-2.krn ['4', '10', '25-26', '39-40']-->
+{% from 'reusables.html' import searchForm %}
+{% from 'reusables.html' import nav %}
 
-<html>
 <head>
-    <script src="http://www.verovio.org/javascript/latest/verovio-toolkit-wasm.js" defer></script>
-    <script src="https://www.midijs.net/lib/midi.js" defer></script>
-    <link href="{{ url_for('static', filename='midi.css') }}" rel="stylesheet" type="text/css" />
-
-    <script>
-        /**
-            We need to wait for the whole page to load before we try to
-            work with Verovio.
-        **/
-        document.addEventListener("DOMContentLoaded", (event) => {
-            verovio.module.onRuntimeInitialized = function () {
-                // This line initializes the Verovio toolkit
-                const tk = new verovio.toolkit();
-
-                tk.setOptions({
-                    pageWidth: document.body.clientWidth,
-                    pageHeight: document.body.clientHeight,
-                    scaleToPageSize: true,
-                });
-
-                // The current page, which will change when playing through the piece
-                let currentPage = 1;
-
-                /**
-                 The handler to start playing the file
-                **/
-                const playMIDIHandler = function () {
-                    // Get the MIDI file from the Verovio toolkit
-                    let base64midi = tk.renderToMIDI();
-                    // Add the data URL prefixes describing the content
-                    let midiString = 'data:audio/midi;base64,' + base64midi;
-                    // Pass it to play to MIDIjs
-                    MIDIjs.play(midiString);
-                }
-
-                /**
-                 The handler to stop playing the file
-                **/
-                const stopMIDIHandler = function () {
-                    MIDIjs.stop();
-                }
-
-                const midiHightlightingHandler = function (event) {
-                    // Remove the attribute 'playing' of all notes previously playing
-                    let playingNotes = document.querySelectorAll('g.note.playing');
-                    for (let playingNote of playingNotes) playingNote.classList.remove("playing");
-
-                    // Get elements at a time in milliseconds (time from the player is in seconds)
-                    let currentElements = tk.getElementsAtTime(event.time * 1000);
-
-                    if (currentElements.page == 0) return;
-
-                    if (currentElements.page != currentPage) {
-                        currentPage = currentElements.page;
-                        document.getElementById("notation").innerHTML = tk.renderToSVG(currentPage);
-                    }
-
-                    // Get all notes playing and set the class
-                    for (note of currentElements.notes) {
-                        let noteElement = document.getElementById(note);
-                        if (noteElement) noteElement.classList.add("playing");
-                    }
-                }
-
-                /**
-                    Wire up the buttons to actually work.
-                */
-                document.getElementById("playMIDI").addEventListener("click", playMIDIHandler);
-                document.getElementById("stopMIDI").addEventListener("click", stopMIDIHandler);
-                /**
-                 Set the function as message callback
-                */
-                MIDIjs.player_callback = midiHightlightingHandler;
-
-                // This line fetches a krn file from the server
-                fetch("{{ url_for('static', filename='sonata03-1.krn') }}")
-                    .then(response => response.text())
-                    .then(krn => {
-                        //console.log(krn);
-                        console.log(tk.getOptions());
-                        // This line loads the file into the Verovio toolkit
-                        //tk.loadData(krn);
-                        var options = {
-                            humType: 1,
-                            font: "Leipzig"
-                        }
-                        var svg = tk.renderData(krn, options);
-                        console.log(svg);
-                        
-                        // This line renders the first page of the file
-                        document.getElementById("notation").innerHTML = svg;// tk.renderToSVG(1);
-
-                        tk.loadData(krn);
-                        document.getElementById("notation2").innerHTML = tk.renderToSVG(1);
-                    });
-
-                
-                // // This line fetches the MEI file we want to render...
-                // fetch("https://www.verovio.org/examples/downloads/Schubert_Lindenbaum.mei")
-                //     // ... then receives the response and "unpacks" the MEI from it
-                //     .then((response) => response.text())
-                //     .then((meiXML) => {
-                //         // ... then we can load the data into Verovio ...
-                //         tk.loadData(meiXML);
-                        
-                //         //let humdrum = tk.convertMEIToHumdrum(meiXML);
-                //         //console.log(humdrum);
-
-                //         // ... and generate the SVG for the first page ...
-                //         let svg = tk.renderToSVG(1);
-                //         // ... and finally gets the <div> element with the ID we specified,
-                //         // and sets the content (innerHTML) to the SVG that we just generated.
-                //         document.getElementById("notation").innerHTML = svg;
-                //     });
-                    
-            }
-        });
-    </script>
+    <title>Google Homepage</title>
+    <script src="https://plugin.humdrum.org/scripts/humdrum-notation-plugin-worker.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link href="{{ url_for('static', filename='results.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ url_for('static', filename='google.css') }}" rel="stylesheet" type="text/css" />
+    <style>
+        #title {
+            text-align: center;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 </head>
-<body>
-    <h1>Hello Verovio!</h1>
-    <h1>Hello {{ name }}!</h1>
-    <button id="playMIDI">Play</button>
-    <button id="stopMIDI">Stop</button>
-    <div id="notation"></div>
-    <div id="notation2"></div>
+
+{{ nav() }}
+
+{{ searchForm() }}
+
+
+<!-- FOOTER -->
+<!--<footer>
+    <ul class="footer-left">
+        <li><a href="#">Advertising</a></li>
+        <li><a href="#">Business</a></li>
+        <li><a href="#">About</a></li>
+    </ul>
+    <ul class="footer-right">
+        <li><a href="#">Privacy</a></li>
+        <li><a href="#">Terms</a></li>
+        <li><a href="#">Settings</a></li>
+    </ul>
+</footer>-->
 </body>
-</html>

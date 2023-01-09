@@ -18,7 +18,7 @@ app = Flask(__name__)
 @app.route('/', methods=['GET', 'POST'])
 def index():
     print('index')
-    return render_template('google.html')
+    return render_template('index.html')
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
@@ -84,7 +84,7 @@ async def hello():
 
 @app.route('/test', methods=['GET', 'POST'])
 def test():
-    return render_template('test.html')
+    return render_template('testSVG.html')
     #return render_template('results.html', test={'checking database': []})
 
 @app.route('/how')

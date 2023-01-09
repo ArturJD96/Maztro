@@ -64,11 +64,12 @@ class ProgressionDisplay:
 
 	def make_name(self) -> str:
 		file_names = os.listdir(Progression.directory)
+		print(file_names)
 		index = 1
 		for n in file_names:
 			if n.startswith(Progression.default_name):
 				i = int(n.split('.')[0].split('_')[-1])
-				if index < i:
+				if index <= i:
 					index = i + 1
 		return f'{Progression.directory}/{Progression.default_name}_{index}.krn'
 

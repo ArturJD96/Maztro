@@ -1,0 +1,7 @@
+**kern
+c
+cc
+b
+cc
+c
+*-

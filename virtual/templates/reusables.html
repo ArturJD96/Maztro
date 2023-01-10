@@ -50,7 +50,7 @@
 <div class="google">
     <h1 id="title">
         <a href="/" id="google_logo">
-            <img id="logo" style='vertical-align:middle;' src='{{ url_for('static', filename='logo.png') }}' height="60px">
+            <img id="logo" style='vertical-align:middle;' src='/static/logo.png' height="60px">
             <div style='vertical-align:middle; display:inline; font-size: 10vh;'>
                 Maztro
             </div>
@@ -71,13 +71,7 @@
             <div style="margin-left: 20vw; background-color: white; margin-right: 20vw; border: 1px solid blue; margin-bottom: 50px; margin-top: -10px">
 
                 <script type="text/humdrum" id="input">
-                    **kern
-                    c
-                    cc
-                    b
-                    cc
-                    c
-                    *-
+{{ include_file('input.txt') }}
                 </script>
                 <script>
                     displayHumdrum({

@@ -1,9 +1,12 @@
 import requests
 import time
+import typing
 
 class MidiListener:
 
-	def __init__ (self, sequence, debug=False, offline=False):
+	def __init__ (self, synth:'fluidsynth', debug=False, offline=False):
+		self.synth = synth
+
 		self._debug = debug
 		self._offline = offline
 		self._active = True
@@ -14,8 +17,6 @@ class MidiListener:
 		midi, delta_time = event
 		msb, pitch, vel = midi if (len(midi) == 3) else (midi[0], None, None)
 
-		print(midi)
-
 		# Actions for msb values triggering recording the sequence
 		if msb in [250,251,252,0x99]:
 			# Start/Stop recording
@@ -25,6 +26,7 @@ class MidiListener:
 				sequence.records = not (msb == 252)
 
 		elif sequence.records and (msb == 0x90 or msb == 0x80):
+			self.synth.play_Note(pitch,0,vel)
 			sequence.event(delta_time, event)
 
 	@staticmethod

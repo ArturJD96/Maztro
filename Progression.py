@@ -9,9 +9,6 @@ from Note import Note
 
 class Progression:
 
-	directory = 'progressions'
-	default_name = 'progression'
-
 	def __init__ (self):
 		self.notes = [] # array of tuples
 		self.mode = 'midi2kern'
@@ -19,10 +16,9 @@ class Progression:
 		self.display = ProgressionDisplay()
 
 	def __str__ (self) -> str:
-		match self.mode:
-			case 'midi2humMidi':
-				return self.midi2humMidi()
-			case 'midi2kern':
+		if self.mode == 'midi2humMidi':
+			return self.midi2humMidi()
+		elif self.mode == 'midi2kern':
 				return self.midi2kern()
 
 	def __iadd__ (self, note:'Note') -> 'Progression':
@@ -52,26 +48,31 @@ class Progression:
 			s += '\n'
 		return s
 
+#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
 class ProgressionDisplay:
 
-	directory = 'progressions'
+	directory = 'virtual/templates'
 	default_name = 'progression'
 
 	def __init__ (self):
 		self.name:str = self.make_name()
 		self.kern = '**kern\t**kern\n*clefF4\t*clefG2\n*-\t*-'
 
+	def __str__ (self):
+		return self.kern
+
 	def make_name(self) -> str:
-		file_names = os.listdir(Progression.directory)
-		print(file_names)
-		index = 1
-		for n in file_names:
-			if n.startswith(Progression.default_name):
-				i = int(n.split('.')[0].split('_')[-1])
-				if index <= i:
-					index = i + 1
-		return f'{Progression.directory}/{Progression.default_name}_{index}.krn'
+		# file_names = os.listdir(ProgressionDisplay.directory)
+		# print(file_names)
+		# index = 1
+		# for n in file_names:
+		# 	if n.startswith(ProgressionDisplay.default_name):
+		# 		i = int(n.split('.')[0].split('_')[-1])
+		# 		if index <= i:
+		# 			index = i + 1
+		# return f'{ProgressionDisplay.directory}/{ProgressionDisplay.default_name}_{index}.krn'
+		return f'{ProgressionDisplay.directory}/input.krn'
 
 	def append (self, note:'Note') -> None:
 		i = self.kern.rfind('\n')

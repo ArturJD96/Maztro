@@ -3,8 +3,12 @@ import warnings
 import sys
 import time
 import asyncio
+import typing
 import rtmidi
 import requests
+import numpy as np
+
+from mingus.midi import fluidsynth
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
@@ -22,11 +26,15 @@ class MainApp:
 	default_keyboard_name = 'MPK mini 3'
 
 	def __init__ (self, keyboard_name:str=None, debug:bool=False, offline:bool=False):
+
+		fluidsynth.init('synth/user_bank.sf2')
+
 		self.keyboard_name = keyboard_name if keyboard_name is not None else MainApp.default_keyboard_name
+		self.synth = fluidsynth
 
 		self.midiin = rtmidi.MidiIn()
 		self.sequence = Sequence()
-		self.listener = MidiListener(self.sequence, debug=debug, offline=offline)
+		self.listener = MidiListener(self.synth, debug=debug, offline=offline)
 		self.progression:'Progression' = None
 
 		self._debug:bool = debug # outputs mock midi input for testing purposes when keyboard no keyboard detected
@@ -42,16 +50,19 @@ class MainApp:
 
 	def stop_recording (self):
 		print(f'RECORDING OFF\n{self.progression}')
-		print(f'KERN TO BE DISPLAYED AS INPUT:\n{self.progression.get_display()}')
+		print(f'KERN TO BE DISPLAYED AS INPUT:\n{self.progression.display.kern}')
 		if not self._offline:
-			requests.post('http://127.0.0.1:5000', data = {"inputkern": str(self.progression)})
+			requests.post('http://127.0.0.1:5000', data={"inputkern": str(self.progression)})
 		correlations = Correlations_in_kern_repository(str(self.progression))
 
 	def record_event (self, abs_time, event:tuple):
 		midi, delta_time = event
 		msb, pitch, vel = midi
 		self.progression += Note(pitch, vel, abs_time, delta_time)
-		print(pitch, vel, abs_time, delta_time)	# my fail: passed by value or reference?
+
+		if not self._offline:
+			requests.post('http://127.0.0.1:5000', data={"progression": str(self.progression.display)})
+		# print(pitch, vel, abs_time, delta_time)	# my fail: passed by value or reference?
 		# tag = f'<script>{self.progression}</script>'
 
 	def __call__ (self):
@@ -82,4 +93,5 @@ class MainApp:
 		return self
 
 	def __exit__ (self, exception_type, exception_value, traceback):
+		fluidsynth.stop_everything()
 		self.midiin.__exit__(*sys.exc_info())

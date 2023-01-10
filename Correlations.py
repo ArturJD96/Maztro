@@ -7,61 +7,37 @@ import subprocess
 class Correlations_in_kern_repository:
 
 	CORRELATION_MINIMUM = 0.99
-	results = {} # remove it
-	correlations = {}
 
 	def __init__ (self, kern_input:str=None, kern_repository_directory:str=None):
 
 		print(f'INPUT : {type(kern_input)}\nkern_input')
 
-		if kern_input is not None and not isinstance(kern_input, str): raise Exception("Argument 'kern input' must be a string!")
-		if kern_repository_directory is not None and not isinstance(kern_repository_directory, str): raise Exception("Argument 'kern repository directory' must be a string!")
+		assert isinstance(kern_input, str) or kern_input is None, "Argument 'kern input' must be a string!"
+		assert isinstance(kern_repository_directory, str) or kern_repository_directory is None, "Argument 'kern repository directory' must be a string!"
 
 		self.humdrum_directory, self.input_file_name, self.wsl = self.selectPlatform()
 		kern_repo_dir = kern_repository_directory or f"{self.humdrum_directory}/data/mozart/piano-sonatas/test"
 
 		self.results = {}	# dict with all the sonatas and their correlations in left-most spine.
+		self.correlations = {}
 		for i, piece in enumerate(os.listdir(kern_repo_dir)):
 			correlated_bars_with_correlations = self.get_correlated_bars(f'{kern_repo_dir}/{piece}')
-			print(correlated_bars_with_correlations)
 			if correlated_bars_with_correlations:
 				self.results[piece] = [i[0] for i in correlated_bars_with_correlations]
 				self.correlations[piece] = [i[1] for i in correlated_bars_with_correlations]
-				Correlations_in_kern_repository.results
 
 		print("CHECKING FINISHED.")
 		print(self.results)
 
-	def report_correlation_for_piece (self, piece, results):
-		print('testikel')
-		print(piece, results)
-		tag = f'<script type="text/x-humdrum" id=""'
-		# <script type="text/x-humdrum" id="example1">
-		# **kern
-		# *M4/4
-		# =1-
-		# 4g
-		# 8fL
-		# 8eJ
-		# 4d
-		# 4c
-		# =
-		# *-
-		# </script>
-
 	def get_correlated_bars (self, kern_piece_dir:str):
-		if not isinstance(kern_piece_dir, str): raise Exception("Argument 'kern_piece_dir' must be a string!")
-		print(f'checking {kern_piece_dir}')
+		assert isinstance(kern_piece_dir, str), "Argument 'kern_piece_dir' must be a string!"
 		self.run_query_using_cmd_and_create_files_with_results(kern_piece_dir)
-		bar_numbers_with_correlations = self.get_correlated_bar_numbers() # E.G. [51, 51, 51, 52, 52, 52, 118, 118, 118, 119, 119, 119]
-		print(bar_numbers_with_correlations)
+		bar_numbers_with_correlations = self.get_correlated_bar_numbers()
 		bar_numbers_with_correlations = list(set(bar_numbers_with_correlations))
-		print(bar_numbers_with_correlations)
+		print(kern_piece_dir, bar_numbers_with_correlations)
 		#bars_as_myank_strings = self.get_bars_as_myank_strings(bar_numbers_with_correlations) #E.G ['51', '51', '51-52', '52', '118', '118', '118-119']
-		#return bars_as_myank_strings
+		self.drop_bars_being_too_close(bar_numbers_with_correlations)
 		return bar_numbers_with_correlations
-
-	# def run_query_using_cmd_and_create_files_with_results (self, kern_piece_dir:str):
 
 	def run_query_using_cmd_and_create_files_with_results (self, kern_piece_dir:str):
 		# This version of the function uses less files
@@ -105,6 +81,11 @@ class Correlations_in_kern_repository:
 				subprocess.run(['correl', '-s', '[\ \*\.r=]', '-f', 'input.semits', 'sonataLeftColumn.semits'], stdout=sonata_left_column_correl)		
 		#! ! !                 ! ! !
 
+	def drop_bars_being_too_close (self, bar_numbers_with_high_correlations):
+		for bar_number, correlation in bar_numbers_with_high_correlations:
+			print(bar_number,correlation)
+
+
 
 	def get_bars_as_myank_strings (self, bar_numbers_with_high_correlations:list):
 		bars_as_myank_strings = []
@@ -147,14 +128,19 @@ class Correlations_in_kern_repository:
 					barline_found = False
 					while not barline_found:
 						line_index -= 1
-						line_with_barline = semits_file[line_index]
-						if line_with_barline.startswith('='):
-							barline_found = True
-							try:
-								bar_number = int(line_with_barline[1:])
-								bar_numbers_with_correlations.append((bar_number, correlation))
-							except ValueError:
-								pass
+						# error may occur when note < 60...
+						try:
+							line_with_barline = semits_file[line_index]
+							if line_with_barline.startswith('='):
+								barline_found = True
+								try:
+									bar_number = int(line_with_barline[1:])
+									# bar_number_contextualized = f'{bar_number-1}-{bar_number+1}' # added context for bars
+									bar_numbers_with_correlations.append((bar_number, correlation))
+								except ValueError:
+									pass
+						except IndexError:
+							pass # absolutely disgusting workaround.
 		return bar_numbers_with_correlations
 
 	def selectPlatform (self):

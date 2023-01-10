@@ -1,10 +1,12 @@
+# -*- coding: utf-8 -*-
+
 import typing
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
 class Note:
 
-	names = ['c','c#','d','e–','e','f','f#','g','a–','a','b–','b']
+	names = ['c','c#','d','e–','e','f','f#','g','a-','a','b-','b']
 
 	def __init__ (self, pitch:int, velocity:int, start_time:float, delta_time:float):	# as midi note
 		self.pitch = pitch

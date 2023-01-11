@@ -7,6 +7,8 @@ import typing
 class Note:
 
 	names = ['c','c#','d','e-','e','f','f#','g','a-','a','b-','b']
+	prev_note_name:str = ''
+	prev_note_pc:int = 0
 
 	def __init__ (self, pitch:int, velocity:int, start_time:float, delta_time:float):	# as midi note
 		self.pitch = pitch
@@ -16,8 +18,13 @@ class Note:
 
 	def __str__ (self) -> str:		# as humdrum token
 
-		m:int = (self.pitch-60) % 12	# pitch class
-		n:str = Note.names[m] 			# pitch name
+		pc:int = (self.pitch-60) % 12	# pitch class
+		n:str = Note.names[pc] 			# pitch name
+
+		# if condition for distinguishing enharmony 
+
+		Note.prev_note_pc = pc
+		Note.prev_note_name = n
 
 		if self.pitch < 60:
 			n = n.capitalize()

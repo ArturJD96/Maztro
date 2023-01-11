@@ -16,6 +16,7 @@ class Correlations_in_kern_repository:
 		assert isinstance(kern_repository_directory, str) or kern_repository_directory is None, "Argument 'kern repository directory' must be a string!"
 
 		self.humdrum_directory, self.input_file_name, self.wsl = self.selectPlatform()
+		# self.input_semits_file = 
 		kern_repo_dir = kern_repository_directory or f"{self.humdrum_directory}/data/mozart/piano-sonatas/test"
 
 		self.results = {}	# dict with all the sonatas and their correlations in left-most spine.
@@ -82,29 +83,30 @@ class Correlations_in_kern_repository:
 		#! ! !                 ! ! !
 
 		# H Y B R I D – leaving old names but using the new method.
-			with\
-				open('mozart_kern_only.krn', 'w') as piece_kern_only,\
-				open('mozart_one_kern_spine.krn', 'w') as piece_one_kern_spine,\
-				open('sonataLeftSpine.semits', 'w') as sonata_left_spine_semits,\
-				open('input.semits', 'w') as input_semits,\
-				open('sonataLeftColumn.correl', 'w') as sonata_left_column_correl:
-				# 1) remove all spines that are not **kern
-				subprocess.run(['extract','-i','**kern',kern_piece_dir], stdout=piece_kern_only)
-				# 2) concatenate every **kern spines into one **kern spine (containing chords only).
-				subprocess.run(['cleave','-d','" "','-i','**kern','-o','**kern','mozart_kern_only.krn'], stdout=piece_one_kern_spine)
-				# 3) turn each note into semits
-				subprocess.run(['semits','-x','mozart_one_kern_spine.krn'], stdout=sonata_left_spine_semits)
-				# 4) make input file to semits. !!! WORTHWHILE to do this only once at the beginning.
-				subprocess.run(['semits', '-x', self.input_file_name], stdout=input_semits)
-				# 5) look for correlation
-				subprocess.run(['correl', '-s', '[\ \*\.r=]', '-f', 'input.semits', 'sonataLeftColumn.semits'], stdout=sonata_left_column_correl)	
+			# with\
+			# 	open('mozart_kern_only.krn', 'w') as piece_kern_only,\
+			# 	open('mozart_one_kern_spine.krn', 'w') as piece_one_kern_spine,\
+			# 	open('sonataLeftSpine.semits', 'w') as sonata_left_spine_semits,\
+			# 	open('input.semits', 'w') as input_semits,\
+			# 	open('sonataLeftColumn.correl', 'w') as sonata_left_column_correl:
+			# 	# 1) remove all spines that are not **kern
+			# 	subprocess.run(['extract','-i','**kern',kern_piece_dir], stdout=piece_kern_only)
+			# 	# 2) concatenate every **kern spines into one **kern spine (containing chords only).
+			# 	subprocess.run(['cleave','-d','" "','-i','**kern','-o','**kern','mozart_kern_only.krn'], stdout=piece_one_kern_spine)
+			# 	# 3) turn each note into semits
+			# 	subprocess.run(['semits','-x','mozart_one_kern_spine.krn'], stdout=sonata_left_spine_semits)
+			# 	# 4) make input file to semits. !!! WORTHWHILE to do this only once at the beginning.
+			# 	subprocess.run(['semits', '-x', self.input_file_name], stdout=input_semits)
+			# 	# 5) look for correlation
+			# 	subprocess.run(['correl', '-s', '[\ \*\.r=]', '-f', 'input.semits', 'sonataLeftColumn.semits'], stdout=sonata_left_column_correl)	
 
+		# B A S H – same as HYBRID but using bash.
+		app_dir = os.getcwd()
+		subprocess.run(['./single_file_search.sh', app_dir, kern_piece_dir, self.input_file_name])
 
 	def drop_bars_being_too_close (self, bar_numbers_with_high_correlations):
 		for bar_number, correlation in bar_numbers_with_high_correlations:
 			print(bar_number,correlation)
-
-
 
 	def get_bars_as_myank_strings (self, bar_numbers_with_high_correlations:list):
 		bars_as_myank_strings = []

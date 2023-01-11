@@ -7,5 +7,5 @@ from Utilities import Hardware_Warning
 
 midi_in = ['MPK mini 3', 'Arturia BeatStep']
 
-with MainApp(midi_in[0], debug=True, offline=True) as app:
+with MainApp(midi_in[0], debug=False, offline=False) as app:
 	app()

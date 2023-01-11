@@ -6,7 +6,7 @@ import subprocess
 
 class Correlations_in_kern_repository:
 
-	CORRELATION_MINIMUM = 0.996
+	CORRELATION_MINIMUM = 0.9985
 
 	def __init__ (self, kern_input:str=None, kern_repository_directory:str=None):
 
@@ -143,7 +143,7 @@ class Correlations_in_kern_repository:
 					correlation = float(line.replace(',', '.'))
 				except ValueError:
 					pass
-				if correlation >= Correlations_in_kern_repository.CORRELATION_MINIMUM:	# or correlation is <= -Correlations_in_kern_repository.CORRELATION_MINIMUM
+				if correlation >= Correlations_in_kern_repository.CORRELATION_MINIMUM: #or correlation is <= -Correlations_in_kern_repository.CORRELATION_MINIMUM:
 					# append the BARNUMBER when a certain correlation is achieved
 					line_index = i
 					barline_found = False

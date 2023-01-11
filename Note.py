@@ -6,7 +6,7 @@ import typing
 
 class Note:
 
-	names = ['c','c#','d','e-','e','f','f#','g','a-','a','b-','b']
+	names = ['c',['c#','d-'],'d',['d#','e-'],'e','f',['f#','g-'],'g',['g#','a-'],'a',['a#','b-'],'b']
 	prev_note_name:str = ''
 	prev_note_pc:int = 0
 
@@ -19,9 +19,16 @@ class Note:
 	def __str__ (self) -> str:		# as humdrum token
 
 		pc:int = (self.pitch-60) % 12	# pitch class
-		n:str = Note.names[pc] 			# pitch name
+		n = Note.names[pc] 				# pitch name (or list of names)
 
-		# if condition for distinguishing enharmony 
+		# enharmony
+		if len(n) > 1:
+			if pc > Note.prev_note_pc:
+				n = n[1]
+			elif pc == Note.prev_note_pc:
+				n = Note.prev_note_n
+			else:
+				n = n[0]
 
 		Note.prev_note_pc = pc
 		Note.prev_note_name = n

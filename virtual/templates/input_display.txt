@@ -1,8 +1,7 @@
 **kern	**kern
 *clefF4	*clefG2
-.	C
-.	E
-.	G
-c	.
-.	B
+r	e
+r	e-
+r	e
+B	r
 *-	*-

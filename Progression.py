@@ -41,12 +41,11 @@ class Progression:
 		else:
 			return '**midi\n' + ''.join(f'{n.pitch}\n' for n in self.notes if n.velocity > 0) + '*-'
 
-	def get_display (self) -> str:
-		s = '**kern\t**kern\n*clefF4\t*clefG2\n'
-		for note in self.notes:
-			s += f'{note}\t.' if note.pitch >= 60 else f'.\t{note}'
-			s += '\n'
-		return s
+	def make_txt_file (self) -> None:
+		with open('virtual/templates/input.txt', 'w') as file:
+			print(str(self))
+			file.write(str(self))
+
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
@@ -60,6 +59,7 @@ class ProgressionDisplay:
 		self.kern = '**kern\t**kern\n*clefF4\t*clefG2\n*-\t*-'
 
 	def __str__ (self):
+		print()
 		return self.kern
 
 	def make_name(self) -> str:
@@ -72,11 +72,11 @@ class ProgressionDisplay:
 		# 		if index <= i:
 		# 			index = i + 1
 		# return f'{ProgressionDisplay.directory}/{ProgressionDisplay.default_name}_{index}.krn'
-		return f'{ProgressionDisplay.directory}/input.krn'
+		return f'virtual/templates/input_display.txt'
 
 	def append (self, note:'Note') -> None:
 		i = self.kern.rfind('\n')
-		line = f'{note}\t.' if note.pitch >= 60 else f'.\t{note}'
+		line = f'r\t{note}' if note.pitch >= 60 else f'{note}\tr'
 		self.kern = f'{self.kern[:i+1]}{line}{self.kern[i:]}'
 		with open(self.name, 'w') as file:
 			file.write(self.kern)

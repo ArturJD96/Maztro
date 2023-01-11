@@ -51,9 +51,10 @@ class MainApp:
 	def stop_recording (self):
 		print(f'RECORDING OFF\n{self.progression}')
 		print(f'KERN TO BE DISPLAYED AS INPUT:\n{self.progression.display.kern}')
+		self.progression.make_txt_file()
 		if not self._offline:
 			requests.post('http://127.0.0.1:5000', data={"inputkern": str(self.progression)})
-		correlations = Correlations_in_kern_repository(str(self.progression))
+		# correlations = Correlations_in_kern_repository(str(self.progression))
 
 	def record_event (self, abs_time, event:tuple):
 		midi, delta_time = event

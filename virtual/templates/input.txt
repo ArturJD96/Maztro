@@ -1,7 +1,5 @@
 **kern
-c
-cc
-b
-cc
-c
-*-
+e
+e-
+e
+B

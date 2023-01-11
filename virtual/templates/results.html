@@ -6,8 +6,8 @@
 <head>
     <title>An example</title>
     <script src="https://plugin.humdrum.org/scripts/humdrum-notation-plugin-worker.js"></script>
-    <link href="{{ url_for('static', filename='results.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ url_for('static', filename='google.css') }}" rel="stylesheet" type="text/css" />
+    <link href="static/results.css" rel="stylesheet" type="text/css" />
+    <link href="static/google.css" rel="stylesheet" type="text/css" />
     <style>
         #title {
             text-align: center;
@@ -126,7 +126,7 @@
                     {% for measure_range in filter|list: %}
                         displayHumdrum({
                             //uri: "github://craigsapp/mozart-piano-sonatas/kern/{{sonata}}",
-                            url: "{{ url_for('static', filename='kern/') }}{{sonata}}",
+                            url: "static/kern/{{sonata}}",
                             //uri: "github://craigsapp/hummel-preludes/kern/prelude67-15.krn",
                             source: '{{ sonata|replace('.', '') }}{{measure_range}}',
                             //source: 'sonata03-1',

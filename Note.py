@@ -49,7 +49,6 @@ class Note:
 						n = ns
 					else:
 						n = nf
-		print(n)
 
 		Note.prev_note_pitch = self.pitch
 		Note.prev_note_name = n
@@ -66,11 +65,13 @@ class Note:
 
 		no = n[0]
 		while o:
-			no *= 2 # mark octave using humdrum note name repetition.
+			no += no # mark octave using humdrum note name repetition.
 			o -= 1
 		
 		if len(n) > 1:
 			n = no + n[1]
+		else:
+			n = no
 
 		print(n)
 

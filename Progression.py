@@ -43,8 +43,7 @@ class Progression:
 
 	def make_txt_file (self) -> None:
 		with open('virtual/templates/input.txt', 'w') as file:
-			print(str(self))
-			file.write(str(self))
+			file.write(str(self)+'*-')
 
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#
@@ -56,10 +55,11 @@ class ProgressionDisplay:
 
 	def __init__ (self):
 		self.name:str = self.make_name()
-		self.kern = '**kern\t**kern\n*clefF4\t*clefG2\n*-\t*-'
+		self.kern = '**kern\t**kern\n*group1\t*group1\n*I"\t*\n*clefF4\t*clefG2\n*-\t*-'
+		with open(self.name, 'w') as file:
+			file.write(self.kern)
 
 	def __str__ (self):
-		print()
 		return self.kern
 
 	def make_name(self) -> str:
@@ -76,7 +76,7 @@ class ProgressionDisplay:
 
 	def append (self, note:'Note') -> None:
 		i = self.kern.rfind('\n')
-		line = f'r\t{note}' if note.pitch >= 60 else f'{note}\tr'
+		line = f'ryy\t{note}' if note.pitch >= 60 else f'{note}\tryy'
 		self.kern = f'{self.kern[:i+1]}{line}{self.kern[i:]}'
 		with open(self.name, 'w') as file:
 			file.write(self.kern)

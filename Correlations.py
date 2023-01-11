@@ -143,7 +143,7 @@ class Correlations_in_kern_repository:
 					correlation = float(line.replace(',', '.'))
 				except ValueError:
 					pass
-				if correlation >= Correlations_in_kern_repository.CORRELATION_MINIMUM: #or correlation is <= -Correlations_in_kern_repository.CORRELATION_MINIMUM:
+				if correlation >= Correlations_in_kern_repository.CORRELATION_MINIMUM or correlation <= -Correlations_in_kern_repository.CORRELATION_MINIMUM:
 					# append the BARNUMBER when a certain correlation is achieved
 					line_index = i
 					barline_found = False

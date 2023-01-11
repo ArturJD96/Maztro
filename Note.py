@@ -9,6 +9,7 @@ class Note:
 	names = ['c',['c#','d-'],'d',['d#','e-'],'e','f',['f#','g-'],'g',['g#','a-'],'a',['a#','b-'],'b']
 	prev_note_name:str = ''
 	prev_note_pc:int = 0
+	prev_note_pitch:int = 0
 
 	def __init__ (self, pitch:int, velocity:int, start_time:float, delta_time:float):	# as midi note
 		self.pitch = pitch
@@ -21,16 +22,36 @@ class Note:
 		pc:int = (self.pitch-60) % 12	# pitch class
 		n = Note.names[pc] 				# pitch name (or list of names)
 
+		# if isinstance(n, list):
+		# 	n = n[0]
+
 		# enharmony
 		if len(n) > 1:
-			if pc > Note.prev_note_pc:
-				n = n[1]
-			elif pc == Note.prev_note_pc:
-				n = Note.prev_note_n
+			d = self.pitch - Note.prev_note_pitch
+			ns, nf = n
+			if len(Note.prev_note_name) > 1 and len(n) > 1:	# previous and current note are chromatic
+				if Note.prev_note_name[1] == '#':
+					n = ns
+				else:
+					n = nf
+			elif d == 0:
+				n = Note.prev_note_name
 			else:
-				n = n[0]
+				d_sign = d > 0
+				d_odd = (d % 2) == 1
+				if d_sign:
+					if d_odd and d < 7:
+						n = nf
+					else:
+						n = ns
+				else:
+					if d_odd and d < 7:
+						n = ns
+					else:
+						n = nf
+		print(n)
 
-		Note.prev_note_pc = pc
+		Note.prev_note_pitch = self.pitch
 		Note.prev_note_name = n
 
 		if self.pitch < 60:
@@ -43,8 +64,14 @@ class Note:
 		else:
 			o -= 5
 
+		no = n[0]
 		while o:
-			n = n[0] + n # mark octave using humdrum note name repetition.
+			no *= 2 # mark octave using humdrum note name repetition.
 			o -= 1
+		
+		if len(n) > 1:
+			n = no + n[1]
+
+		print(n)
 
 		return n

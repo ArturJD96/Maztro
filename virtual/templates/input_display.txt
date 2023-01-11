@@ -1,0 +1,9 @@
+**kern	**kern
+*group1	*group1
+*I"	*
+*clefF4	*clefG2
+A#	ryy
+A	ryy
+ryy	c
+B	ryy
+*-	*-

@@ -156,7 +156,7 @@ class Correlations_in_kern_repository:
 								barline_found = True
 								try:
 									bar_number = int(line_with_barline[1:])
-									bar_number_contextualized = f'{bar_number-1}-{bar_number+1}' # added context for bars
+									bar_number_contextualized = f'{bar_number}-{bar_number+1}' # added context for bars
 									bar_numbers_with_correlations.append((bar_number_contextualized, correlation))
 								except ValueError:
 									pass
